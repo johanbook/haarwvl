@@ -36,6 +36,10 @@ transposes matrix
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
 creates string representation of matrix
 
+**def shape()**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;
+returns the shape of the matrix.
+
 # Transform (Frank)
 does the transformation (and inverse) of given matrix. Nice of one can determine the weigth used in the matrix. 
 Perhaps a mode of whether Matrix.transpose() or Matrix.inverse() is to be used?
