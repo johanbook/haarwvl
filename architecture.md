@@ -35,7 +35,7 @@ transposes matrix
 **def rep()**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
 creates string representation of matrix
-
+<br>
 **def shape()**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
 returns the shape of the matrix.
