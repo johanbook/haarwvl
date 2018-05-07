@@ -47,6 +47,7 @@ returns the indices of the matrix.
 # Transform (Frank)
 does the transformation (and inverse) of given matrix. Nice of one can determine the weigth used in the matrix. 
 Perhaps a mode of whether Matrix.transpose() or Matrix.inverse() is to be used?
+Can lossy compression be achieved here?
 
 **def transform(Matrix)** 
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -57,7 +58,7 @@ performs transformation on matrix
 performs inverse transformation on matrix
 
 # Image (Björn)
-Contains an image and appropriate methods for handling it.
+Contains an image and appropriate methods for handling it. Nice if the image can handle rgb (can be obtained by using scipy.misc.imread(name, flatten=False, mode='RGB'))
 
 **def init(String path)** 
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -80,4 +81,5 @@ compress image *num* times using the inverse_transform in Transform. **Note!** I
 displays the image (use matplotlib plot?)
 
 # Test (Johan)
-Some code that loads an image, displays it, compressses it, displays and saves it, uncompresses, displays and saves it
+Some code that loads an image, displays it, compressses it, displays and saves it, uncompresses, displays and saves it.
+Should measure performance of transformations with and without matrix multiplication.
