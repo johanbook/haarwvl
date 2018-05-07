@@ -65,11 +65,11 @@ save this image to a given path. Throws appropriate errors
 <br>
 **def compress(num=1)**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
-compress image *num* times using the transform method in Transform.
+compress image *num* times using the transform method in Transform. **Note!** It *num* is more than 1 you should do this for only a part of the image.
 <br>
 **def uncompress(num=1)**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
-compress image *num* times using the inverse_transform in Transform.
+compress image *num* times using the inverse_transform in Transform. **Note!** It *num* is more than 1 you should do this for only a part of the image.
 <br>
 **def display()**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
