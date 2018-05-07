@@ -39,6 +39,10 @@ creates string representation of matrix
 **def shape()**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
 returns the shape of the matrix.
+<br>
+**def indices()**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;
+returns the indices of the matrix.
 
 # Transform (Frank)
 does the transformation (and inverse) of given matrix. Nice of one can determine the weigth used in the matrix. 
