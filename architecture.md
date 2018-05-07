@@ -36,7 +36,7 @@ transposes matrix
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
 creates string representation of matrix
 
-# Transform (not a class) (Frank)
+# Transform (Frank)
 does the transformation (and inverse) of given matrix. Nice of one can determine the weigth used in the matrix. 
 Perhaps a mode of whether Matrix.transpose() or Matrix.inverse() is to be used?
 
@@ -53,7 +53,7 @@ Contains an image and appropriate methods for handling it.
 
 **def init(String path)** 
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
-Creates an image from a string, throws appropriate erros. Cuts rows/columns to get even number
+Creates an image from a string, throws appropriate erros. The image is stored in the class as a Matrix. Cuts rows/columns to get even number.
 <br>
 **def save(String path)**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -61,11 +61,11 @@ save this image to a given path. Throws appropriate errors
 <br>
 **def compress(num=1)**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
-compress image *num* times.
+compress image *num* times using the transform method in Transform.
 <br>
 **def uncompress(num=1)**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
-compress image *num* times.
+compress image *num* times using the inverse_transform in Transform.
 <br>
 **def display()**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
