@@ -1,7 +1,7 @@
 **Warning:** Prepare for Johan's pseudo code! Also note, this should be the public methods you use. 
 Feel free to add any private methods in your code. 
 
-# Matrix
+# Matrix (David)
 Makes it easier to manipulate matrices, keeps the rest of the code clean and tidy :)
 
 **def init(array)** 
@@ -36,7 +36,7 @@ transposes matrix
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
 creates string representation of matrix
 
-# Transform (not a class)
+# Transform (not a class) (Frank)
 does the transformation (and inverse) of given matrix. Nice of one can determine the weigth used in the matrix. 
 Perhaps a mode of whether Matrix.transpose() or Matrix.inverse() is to be used?
 
@@ -48,7 +48,7 @@ performs transformation on matrix
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
 performs inverse transformation on matrix
 
-# Image
+# Image (Björn)
 Contains an image and appropriate methods for handling it.
 
 **def init(String path)** 
@@ -71,5 +71,5 @@ compress image *num* times.
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
 displays the image (use matplotlib plot?)
 
-# Test
+# Test (Johan)
 Some code that loads an image, displays it, compressses it, displays and saves it, uncompresses, displays and saves it
