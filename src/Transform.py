@@ -1,21 +1,39 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
+Created on Mon May  7 13:34:28 2018
 
-This is a temporary script file.
+@author: Frank Johansson
 """
 
 import numpy as np
 from scipy import *
 
-Matrix = array([[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6]])
-
-def transform(Matrix, weight = sqrt(1)):
+def transform(matrix, weight = sqrt(2)):
     orthagonal = (weight == sqrt(2))
-    W = np.zeros(Matrix.shape)
-    i,j = np.indices(W.shape)
-    W[2*i==j] = weight
-    W[2*i==j-1] = weight
-    W[2*i-W.shape[0]==j] = -weight
-    W[2*i-W.shape[0]==j-1] = weight
-    return W
+    factor = weight/2.
+    W = Matrix(np.zeros(matrix.shape))
+    i,j = matrix.indices(W.shape)
+    W[2*i==j] = factor
+    W[2*i==j-1] = factor
+    W[2*i-W.shape[0]==j] = -factor
+    W[2*i-W.shape[0]==j-1] = factor
+    if orthagonal:
+        Winverse = W.transpose()
+    else:
+        Winverse = W.inverse()
+    return W * matrix * Winverse
+
+def inverse_transform(matrix, weight = sqrt(2)):
+    orthagonal = (weight == sqrt(2))
+    factor = weight/2.
+    W = Matrix(np.zeros(matrix.shape))
+    i,j = matrix.indices(W.shape)
+    W[2*i==j] = factor
+    W[2*i==j-1] = factor
+    W[2*i-W.shape[0]==j] = -factor
+    W[2*i-W.shape[0]==j-1] = factor
+    if orthagonal:
+        Winverse = W.transpose()
+    else:
+        Winverse = W.inverse()
+    return Winverse * matrix * W
