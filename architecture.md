@@ -43,6 +43,10 @@ returns the shape of the matrix.
 **def indices()**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;
 returns the indices of the matrix.
+<br>
+**def array()**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;
+returns a reference to the numpy array contained in the class.
 
 # Transform (Frank)
 does the transformation (and inverse) of given matrix. Nice of one can determine the weigth used in the matrix. 
