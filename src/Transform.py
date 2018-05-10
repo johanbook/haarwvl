@@ -16,6 +16,7 @@ def _inverse(matrix, weight):
         Winverse = matrix.transpose()
     else:
         Winverse = martix.inverse()
+    return Winverse
 
 def transform(matrix, weight = sqrt(2)):
     '''
