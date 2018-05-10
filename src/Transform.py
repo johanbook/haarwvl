@@ -8,14 +8,30 @@ Created on Mon May  7 13:34:28 2018
 import numpy as np
 from scipy import *
 
+def _isnumber(x):
+    return isintance(x, int) or isintance(x, float)
+
+def _inverse(matrix, weight):
+    if weight == sqrt(2):
+        Winverse = matrix.transpose()
+    else:
+        Winverse = martix.inverse()
+
 def transform(matrix, weight = sqrt(2)):
     '''
     Compresses an image ( stored in 'matrix' ) using the Haar Wavelet Transformation method
     with a certain weight ( deafault sqrt(2) ).
     Returns the compressed image as a Matrix
     '''
-    W, Winverse = wavelet(matrix, weight)
-    return W * matrix * Winverse
+    if isinstance(matrix, Matrix):
+        if _isnumber(weight):
+            Wm, Wn = wavelet(matrix, weight)
+            Wn = _inverse(Wn, weight)
+            return Wm * matrix * Wn
+        else:
+            raise TypeError ('Expects a real number weight.')
+    else:
+        raise TypeError ('Expects an image as a Matrix.')
 
 def inverse_transform(matrix, weight = sqrt(2)):
     '''
@@ -23,8 +39,16 @@ def inverse_transform(matrix, weight = sqrt(2)):
     with a certain weight ( deafault sqrt(2) ).
     Returns the uncompressed image as a Matrix
     '''
-    W, Winverse = wavelet(matrix, weight)
-    return Winverse * matrix * W
+    if isinstance(matrix, Matrix):
+        if _isnumber(weight):
+            Wm, Wn = wavelet(matrix, weight)
+            Wm = _inverse(Wm, weight)
+            return Wm * matrix * Wn
+        else:
+            raise TypeError ('Expects a real number weight.')
+    else:
+        raise TypeError ('Expects an image as a Matrix.')
+    
 
 def wavelet(matrix, weight):
     '''
@@ -32,18 +56,20 @@ def wavelet(matrix, weight):
     Depending on the chosen weight ( which determines whether the matrix is orthagonal ),
     the inverse is either set as the transpose or calculated normally.
     '''
-    W = Matrix(np.zeros(matrix.shape))
-    i,j = matrix.indices(W.shape)
+    Wm = Matrix(np.zeros(matrix.shape[0],matrix.shape[0]))
+    Wn = Matrix(np.zeros(matrix.shape[1],matrix.shape[1]))
+    i,j = matrix.indices(Wm.shape)
+    k,l = matrix.indices(Wn.shape)
     factor = weight/2.
-    W[2*i==j] = factor
-    W[2*i==j-1] = factor
-    W[2*i-W.shape[0]==j] = -factor
-    W[2*i-W.shape[0]==j-1] = factor
-    if weight == sqrt(2):
-        Winverse = W.transpose()
-    else:
-        Winverse = W.inverse()
-    return W, Winverse
+    Wm[2*i==j] = factor
+    Wm[2*i==j-1] = factor
+    Wm[2*i-Wm.shape[0]==j] = -factor
+    Wm[2*i-Wm.shape[0]==j-1] = factor
+    Wn[2*i==j] = factor
+    Wn[2*i==j-1] = factor
+    Wn[2*i-Wn.shape[0]==j] = -factor
+    Wn[2*i-Wn.shape[0]==j-1] = factor
+    return Wm, Wn
 
 def extransform ( matrix ):
     '''
