@@ -15,7 +15,7 @@ class Image:
         Input: path (string) provided by user, given in one of the two following forms, ex1: 'C:\\users\\documents' or ex2: 'C:/users/documents', if these forms are ignored, nothing will work.
         '''      
         
-        // Check if valid path
+        # Check if valid path
         if path == None:
             raise Exception('No path was given.')
         if not isinstance(path, str):
@@ -23,7 +23,7 @@ class Image:
         if not os.path.exists(path):
             raise Exception('Path does not exist. Try again.')
             
-        // Read image and store in class
+        # Read image and store in class
         self.matrix = Matrix(sm.imread(self.path, True))
         self.reshape()
         
