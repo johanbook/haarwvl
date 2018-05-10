@@ -57,8 +57,8 @@ def wavelet(matrix, weight):
     Depending on the chosen weight ( which determines whether the matrix is orthagonal ),
     the inverse is either set as the transpose or calculated normally.
     '''
-    Wm = Matrix(np.zeros(matrix.shape[0],matrix.shape[0]))
-    Wn = Matrix(np.zeros(matrix.shape[1],matrix.shape[1]))
+    Wm = Matrix((np.zeros(matrix.shape[0],matrix.shape[0])))
+    Wn = Matrix((np.zeros(matrix.shape[1],matrix.shape[1])))
     i,j = matrix.indices(Wm.shape)
     k,l = matrix.indices(Wn.shape)
     factor = weight/2.
