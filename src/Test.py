@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu May 10 15:35:33 2018
-
-@author: bas12ban
-"""
-
 ########################################
 # Test.py
 # Johan Book
