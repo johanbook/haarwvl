@@ -29,3 +29,20 @@ def wavelet(matrix, weight, orthagonal):
     else:
         Winverse = W.inverse()
     return W, Winverse
+
+def extransform ( matrix ):
+    return Matrix( np.array( [ ( matrix[m+1] + matrix[m] ) / 2
+                              for m in range( matrix.shape[0] - 1 ) ]
+            + [ ( matrix[n+1] - matrix[n] ) / 2 
+               for n in range( matrix.shape[0] - 1 ) ] ) )
+    
+def exinverse_transform ( matrix ):
+    odd = [ matrix[n] - matrix[ n + matrix.shape[0] / 2 ]
+    for n in range( matrix.shape[0] / 2 ) ]
+    even = [ matrix[n] + matrix[ n + matrix.shape[0] / 2 ]
+    for n in range( matrix.shape[0] / 2 ) ]
+    inverselist = []
+    for n in range(len(odd)):
+        inverselist.append(odd[n])
+        inverselist.append(even[n])
+    return Matrix( np.array( inverselist ) )
