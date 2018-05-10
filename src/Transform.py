@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon May  7 13:34:28 2018
-
 @author: Frank Johansson
 """
 
@@ -48,7 +47,7 @@ def inverse_transform(matrix, weight = sqrt(2)):
         else:
             raise TypeError ('Expects a real number weight.')
     else:
-        raise TypeError ('Expects an image as a Matrix.')
+        raise TypeError ('Expects an image as a Matrix.', type(matrix) )
     
 
 def wavelet(matrix, weight):
@@ -57,19 +56,24 @@ def wavelet(matrix, weight):
     Depending on the chosen weight ( which determines whether the matrix is orthagonal ),
     the inverse is either set as the transpose or calculated normally.
     '''
+    
     Wm = Matrix(np.zeros((matrix.shape[0],matrix.shape[0])))
     Wn = Matrix(np.zeros((matrix.shape[1],matrix.shape[1])))
-    i,j = matrix.indices(Wm.shape)
-    k,l = matrix.indices(Wn.shape)
+    
+    i,j = Wm.indices()
+    k,l = Wn.indices()
     factor = weight/2.
-    Wm[2*i==j] = factor
-    Wm[2*i==j-1] = factor
-    Wm[2*i-Wm.shape[0]==j] = -factor
-    Wm[2*i-Wm.shape[0]==j-1] = factor
-    Wn[2*k==l] = factor
-    Wn[2*k==l-1] = factor
-    Wn[2*k-Wn.shape[0]==l] = -factor
-    Wn[2*k-Wn.shape[0]==l-1] = factor
+    
+    Wm.array[2*i==j] = factor
+    Wm.array[2*i==j-1] = factor
+    Wm.array[2*i-Wm.shape[0]==j] = -factor
+    Wm.array[2*i-Wm.shape[0]==j-1] = factor
+    
+    Wn.array[2*k==l] = factor
+    Wn.array[2*k==l-1] = factor
+    Wn.array[2*k-Wn.shape[0]==l] = -factor
+    Wn.array[2*k-Wn.shape[0]==l-1] = factor
+    
     return Wm, Wn
 
 def extransform ( matrix ):
