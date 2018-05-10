@@ -9,7 +9,7 @@ import numpy as np
 from scipy import *
 
 def _isnumber(x):
-    return isintance(x, int) or isintance(x, float)
+    return isinstance(x, int) or isinstance(x, float)
 
 def _inverse(matrix, weight):
     if weight == sqrt(2):
