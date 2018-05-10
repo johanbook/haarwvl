@@ -29,6 +29,7 @@ class Image:
         rows, cols = self.matrix.shape
         if rows % 2 != 0 : self.matrix.array = self.matrix.array[0:-1]
         if cols % 2 != 0 : self.matrix.array = self.matrix.array[:,0:-1]
+        self.matrix = Matrix(self.matrix.array)
         
     def save(self):
         sm.imsave('newimagefile.jpg', self.matrix.array)
