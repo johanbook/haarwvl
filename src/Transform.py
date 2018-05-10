@@ -66,10 +66,10 @@ def wavelet(matrix, weight):
     Wm[2*i==j-1] = factor
     Wm[2*i-Wm.shape[0]==j] = -factor
     Wm[2*i-Wm.shape[0]==j-1] = factor
-    Wn[2*i==j] = factor
-    Wn[2*i==j-1] = factor
-    Wn[2*i-Wn.shape[0]==j] = -factor
-    Wn[2*i-Wn.shape[0]==j-1] = factor
+    Wn[2*k==l] = factor
+    Wn[2*k==l-1] = factor
+    Wn[2*k-Wn.shape[0]==l] = -factor
+    Wn[2*k-Wn.shape[0]==l-1] = factor
     return Wm, Wn
 
 def extransform ( matrix ):
