@@ -9,15 +9,13 @@ import os
 import scipy.misc as sm
 
 class Image:
-    def __init__(self,path=None):
+    def __init__(self,path):
         '''
         Class representing an grayscale image. Imported images can be compressed using the Haar Wavelet transformation, compressed images can be uncompressed.
         Input: path (string) provided by user, given in one of the two following forms, ex1: 'C:\\users\\documents' or ex2: 'C:/users/documents', if these forms are ignored, nothing will work.
         '''      
         
         # Check if valid path
-        if path == None:
-            raise Exception('No path was given.')
         if not isinstance(path, str):
             raise TypeError('The path was not given as a string. Please put citation marks around the path.')
         if not os.path.exists(path):
