@@ -23,10 +23,7 @@ from scipy.misc import toimage
 class RGBImage:
     def __init__(self, path):
         '''
-        Class representing an grayscale image. Imported images can be compressed 
-        using the Haar Wavelet transformation, compressed images can be uncompressed.
-        Input: path (string) provided by user, given in one of the two following forms, 
-        ex1: 'C:\\users\\documents' or ex2: 'C:/users/documents', if these forms are ignored, nothing will work.
+        An extension of Image.
         '''        
         
         # comments
@@ -45,14 +42,15 @@ class RGBImage:
         imgs= np.split(arr,colors,2)
         self._images = []
         for img in imgs:
+            Image(np.squeeze(img, axis=2)).display()
             self._images.append(Image(np.squeeze(img, axis=2)))
         
     def _reform(self):
         r,c = self._images[0].matrix.array.shape
         arrs = []
         for image in self._images:
-            arrs.append(image.matrix.array) 
-        return np.concatenate(arrs).reshape(r,c,len(self._images))
+            arrs.append(image.matrix.array.reshape(r,c,1)) 
+        return np.concatenate(arrs, axis=2)
             
     def compress(self, num=1):
         for image in self._images:
@@ -63,7 +61,12 @@ class RGBImage:
             image.uncompress(num)
         
     def display(self):
-        toiamge(self._reform).show()
+        x = self._reform()
+        print(type(x), x.shape)
+        plt.imshow(x)
+        #for img in self._images:
+        #    img.display()
+        #toimage(self._reform).show()
         
     def invert():
         for image in self._images:
