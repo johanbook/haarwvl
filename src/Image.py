@@ -59,7 +59,7 @@ class Image:
          Johan Book, nat13jbo@student.lu.se)
          Compresses an image with the Haar wavelet transformation.
          Inputs: num (int), number of compressions, given by user (default value is 1)
-                 echo (Boolean), should not be specified by user
+                 echo (Boolean), should not be specified by user (default False)
         """
         self._num = num
         rows, cols = self.matrix.shape 
@@ -89,6 +89,13 @@ class Image:
                 print("Matrix max value:", np.amax( self.matrix.array))                            
         
     def uncompress(self, num=-1, echo=False):
+        """
+        (Björn Annby-Andersson, bas12ban@student.lu.se
+         Johan Book, nat13jbo@student.lu.se)
+         Decompresses a compressed image. User must know how many times the input image is compressed to get back original.
+         Inputs: num (int), number of times to decompress, provided by user 
+                 echo (Boolean), should not be used by user (default False)
+        """
         if num < 0:
             num = self._num
             
