@@ -10,6 +10,7 @@
 import os
 import scipy.misc as sm
 from scipy.misc import toimage
+import matplotlib.pylab as plb
 
 class Image:
     def __init__(self, path):
@@ -47,47 +48,48 @@ class Image:
             sm.imsave(path, self.matrix.array)
             
     def compress(self,num=1, echo=False):
-        #self.matrix = transform(self.matrix)
         self._num = num
-        if num >= 1:
-            for n in range(num):
-                rows, cols = shape(self.matrix.array)
-                #print(rows,cols)
-                temp_matrix = Matrix( self.matrix.array[0:rows/2**(n),0:cols/2**(n)] )
+        
+        if num < 1:
+            raise Exception("Expected positive integer, got " + str(num))
+        
+        for n in range(num):
+            rows, cols = self.matrix.shape            
+            temp_matrix = Matrix( self.matrix.array[0:int(rows/2**(n)),0:int(cols/2**(n))] )
                 
-                if echo:
-                    toimage(temp_matrix.array).show()
-                
-                #print(shape(temp_matrix.array))
-                temp_matrix = transform(temp_matrix)
-                #self.matrix = temp_matrix
-                #toimage(self.invert(temp_matrix).array).show()
-                self.matrix.array[0:rows/2**(n),0:cols/2**(n)] = temp_matrix.array
-                #toimage(self.invert(temp_matrix).array).show()
-                self.matrix = Matrix( self.matrix.array )                
-                
+            if echo:
+                toimage(temp_matrix.array).show()
+
+            temp_matrix = transform(temp_matrix)
+           
+            if echo: 
+                print(temp_matrix.shape)
+                print(matrix.shape)
+            
+            self.matrix.array[0:int(rows/2**n),0:int(cols/2**n)] = temp_matrix.array/2
+            #plb.matshow(self.matrix.array)
+            print("Matrix max value:", np.amax( self.matrix.array))                            
+        
     def uncompress(self, num=-1, echo=False):
         if num < 0:
             num = self._num
+        numbers = []
             
         for n in range(num-1,-1,-1):
-                rows, cols = shape(self.matrix.array)
+            rows, cols = self.matrix.shape
 
-                temp_matrix = Matrix( self.matrix.array[0:rows/2**(n),0:cols/2**(n)] )
+            temp_matrix = Matrix( self.matrix.array[0:int(rows/2**n),0:int(cols/2**n)] )
                 
-                if echo:
-                    toimage(temp_matrix.array).show()
+            if echo:
+                toimage(temp_matrix.array).show()
                 
-                #print(shape(temp_matrix.array))
-                temp_matrix = inverse_transform(temp_matrix)
-                #self.matrix = temp_matrix
-                #toimage(self.invert(temp_matrix).array).show()
-                self.matrix.array[0:rows/2**(n),0:cols/2**(n)] = temp_matrix.array
-                #toimage(self.invert(temp_matrix).array).show()
-                self.matrix = Matrix( self.matrix.array ) 
-        
+            temp_matrix = inverse_transform(temp_matrix)
+            temp_matrix.array = 255*temp_matrix.array/np.amax(temp_matrix.array)
+            self.matrix.array[0:int(rows/2**n),0:int(cols/2**n)] = temp_matrix.array
+            print("Matrix max value:", np.amax( self.matrix.array))
+            numbers.append(np.amax( self.matrix.array))
+        plot(numbers)
             
-        #self.matrix = inverse_transform(self.matrix)
     
     def display(self):
         toimage(self.matrix.array).show()
