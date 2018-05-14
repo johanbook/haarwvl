@@ -117,9 +117,12 @@ class Image:
         toimage(self.matrix.array).show()
     
       
-    def invert(self, matrix):
-        X, Y = matrix.shape
+    def invert(self):
+        """
+        (Johan Book, nat13jbo@student.lu.se)
+        Inverts the grayscale coefficients of the image.
+        """
+        X, Y = self.matrix.shape
         for x in range(X):
             for y in range(Y):
-                matrix.array[x][y] = 255 - matrix.array[x][y] 
-        return matrix
+                self.matrix.array[x][y] = 255 - self.matrix.array[x][y] 
