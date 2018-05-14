@@ -41,7 +41,7 @@ class Matrix:
     
     @property
     def shape(self):
-        return array.shape
+        return self.array.shape
         
     def indices(self):
         return np.indices(self.shape)
