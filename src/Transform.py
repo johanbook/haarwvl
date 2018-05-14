@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon May  7 13:34:28 2018
-@author: Frank Johansson
+@author: Frank Johansson, nat13fjo@student.lu.se
 """
 
 import numpy as np
@@ -9,7 +9,6 @@ from scipy import *
 
 def transform(matrix):
     '''
-    (Frank Johansson, nat13fjo@student.lu.se)
     Compresses an image ( stored in 'matrix' )
     using the Haar Wavelet Transformation method.
     Returns the compressed image as a Matrix
@@ -27,7 +26,6 @@ def transform(matrix):
 
 def inverse_transform(matrix):
     '''
-    (Frank Johansson, nat13fjo@student.lu.se)
     Uncompresses an image ( stored in 'matrix' )
     using the Haar Wavelet Transformation method.
     Returns the uncompressed image as a Matrix
@@ -45,7 +43,6 @@ def inverse_transform(matrix):
 
 def wavelet(matrix):
     '''
-    (Frank Johansson, nat13fjo@student.lu.se)
     Constructs the Discrete Haar Wavelet Transformation matrices,
     compatible with the argument matrix, and returns them.
     '''
@@ -78,7 +75,6 @@ def wavelet(matrix):
 
 def extransform ( matrix ):
     '''
-    (Frank Johansson, nat13fjo@student.lu.se)
     Compresses an image ( stored in 'matrix' )
     using the Haar Wavelet Transformation method.
     The calculations are made explicitly without the use of matrices.
@@ -97,7 +93,6 @@ def extransform ( matrix ):
     
 def exinverse_transform ( matrix ):
     '''
-    (Frank Johansson, nat13fjo@student.lu.se)
     Uncompresses an image ( stored in 'matrix' )
     using the Haar Wavelet Transformation method.
     The calculations are made explicitly without the use of matrices.
