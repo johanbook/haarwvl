@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #####################################################
 # Image.py
-# Günther
+# Björn Annby - Andersson
 # bas12ban@student.lu.se
 # 2018-05-10
 #
-# This class is gay and so am I
+# Class called Image.
 #####################################################
 
 import os
@@ -19,10 +19,11 @@ class Image:
         Class representing an grayscale image. Imported images can be compressed 
         using the Haar Wavelet transformation, compressed images can be uncompressed.
         Input: path (string) provided by user, given in one of the two following forms, 
-        ex1: 'C:\\users\\documents' or ex2: 'C:/users/documents', if these forms are ignored, nothing will work.
+        ex1: 'C:\\users\\documents' or ex2: 'C:/users/documents'.
         '''        
         
-        # comments
+        # The if statements check whether the path is given as a string or if the path exists. Raises errors when
+        # the path is not given as a string or if the path does not exist. 
         if not isinstance(path,str):
             raise TypeError('The path was not given as a string. Please put citation marks around the path.')
         if not os.path.exists(path):
@@ -32,18 +33,32 @@ class Image:
         # is used in uncompressed() if no argument is given
         self._num = 0        
         
-        # comments
+        # Creates an array "arr" which contains an image with grayscale coefficients. 
+        # If the number of rows or columns of "arr" is odd, "arr" is reshaped to be an
+        # array of even number of columns and rows. 
         arr = sm.imread(path, True)
-        
         rows, cols = arr.shape
         if rows % 2 != 0 : arr = arr[0:-1]
         if cols % 2 != 0 : arr = arr[:,0:-1]
         self.matrix = Matrix(arr)
         
     def save(self,path):
+        """
+        (Björn Annby-Andersson, bas12ban@student.lu.se)
+        This method takes a path as input and stores the matrix 
+        representation of an image as a grayscale picture at the given path.
+        Input: path (string), provided by user.
+        """
             sm.imsave(path, self.matrix.array)
             
     def compress(self,num=1, echo=False):
+        """
+        (Björn Annby-Andersson, bas12ban@student.lu.se
+         Johan Book, nat13jbo@student.lu.se)
+         Compresses an image with the Haar wavelet transformation.
+         Inputs: num (int), number of compressions, given by user (default value is 1)
+                 echo (Boolean), should not be specified by user
+        """
         self._num = num
         rows, cols = self.matrix.shape 
         
@@ -93,6 +108,10 @@ class Image:
             
     
     def display(self):
+        """
+        (Björn Annby - Andersson, bas12ban@student.lu.se)
+        This method displays the current version of the image, it can be compressed, decompressed or neither. 
+        """
         toimage(self.matrix.array).show()
     
       
