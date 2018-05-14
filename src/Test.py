@@ -13,13 +13,10 @@
 # methods will be callled.
 #####################################################
 
-import Imageclass
-import Matrix
-
 import numpy as np
 
 # Test matrix class
-def test_matrix(echo=False):
+def test_matrix(echo=False, dim=17, tol=1e-10):
   """
   A function to evaluate the performance of the Matrix class.
 
@@ -27,20 +24,35 @@ def test_matrix(echo=False):
   ----------
   echo : boolean
       whether to write to stdout or not. Use True for debugging. Default False.
+  dim : int
+      dimension of used test matrix.
+  tol : double
+      tolerance 
 
   Returns
   -------
   boolean
-      result of the test
+      result of the test. True for sucessful and false otherwise
   """
   
-  # Check inverse method
-  dim = 3
-  Matrix a = Matrix( np.random.rand(dim,dim) )
-  Matrix a_inv = a.inverse()
-  b = ( a*a.inverse() == Matrix(np.eye(dim)) )                 
   
-  return True
+  # Check inverse method
+  a = Matrix( np.random.rand(dim,dim) )
+  i = a*a.inverse()
+  b = sum( sum( abs(i.array - np.eye(dim)) ) )    
+  
+  # If echo is enabled print results
+  if echo:
+      print('='*75)
+      print("Original matrix")
+      print(a)
+      print('='*75)
+      print("Matrix times its inverse")
+      print(i)
+      print('='*75)
+      print("Absolute sum:", b)
+  
+  return b <= tol
 
 # Test image class
 def test_image(path, path_compressed=None, path_uncompressed=None, echo=False, num=4):
@@ -77,7 +89,7 @@ def test_image(path, path_compressed=None, path_uncompressed=None, echo=False, n
   return True
 
 # Test matrix
-test_matrix()
+test_matrix(echo=True)
 
 # Test image
 test_image(
