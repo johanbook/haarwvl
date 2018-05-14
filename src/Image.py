@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #####################################################
 # Image.py
 # Günther
@@ -27,34 +28,33 @@ class Image:
         if not os.path.exists(path):
             raise Exception('Path does not exist: ' + path)
         
-        # comments
-        self.path = path
-        self.matrix = Matrix(sm.imread(self.path, True))
-        self.reshape()
-        
         # default number of compressions
         # is used in uncompressed() if no argument is given
-        self._num = 0
+        self._num = 0        
         
-    def reshape(self):
-        rows, cols = self.matrix.shape
-        if rows % 2 != 0:
-            self.matrix.array = self.matrix.array[0:-1]
-        if cols % 2 != 0:
-            self.matrix.array = self.matrix.array[:,0:-1]
-        self.matrix = Matrix(self.matrix.array)
+        # comments
+        arr = sm.imread(path, True)
+        
+        rows, cols = arr.shape
+        if rows % 2 != 0 : arr = arr[0:-1]
+        if cols % 2 != 0 : arr = arr[:,0:-1]
+        self.matrix = Matrix(arr)
         
     def save(self,path):
             sm.imsave(path, self.matrix.array)
             
     def compress(self,num=1, echo=False):
         self._num = num
+        rows, cols = self.matrix.shape 
+        
+        if rows % 2**num != 0 or cols % 2**num != 0:
+            print("WARNING: Significant compression artifacts might occur")
+        
         
         if num < 1:
             raise Exception("Expected positive integer, got " + str(num))
         
         for n in range(num):
-            rows, cols = self.matrix.shape            
             temp_matrix = Matrix( self.matrix.array[0:int(rows/2**(n)),0:int(cols/2**(n))] )
                 
             if echo:
@@ -67,13 +67,13 @@ class Image:
                 print(matrix.shape)
             
             self.matrix.array[0:int(rows/2**n),0:int(cols/2**n)] = temp_matrix.array/2
-            #plb.matshow(self.matrix.array)
-            print("Matrix max value:", np.amax( self.matrix.array))                            
+            
+            if echo:            
+                print("Matrix max value:", np.amax( self.matrix.array))                            
         
     def uncompress(self, num=-1, echo=False):
         if num < 0:
             num = self._num
-        numbers = []
             
         for n in range(num-1,-1,-1):
             rows, cols = self.matrix.shape
@@ -86,9 +86,10 @@ class Image:
             temp_matrix = inverse_transform(temp_matrix)
             temp_matrix.array = 255*temp_matrix.array/np.amax(temp_matrix.array)
             self.matrix.array[0:int(rows/2**n),0:int(cols/2**n)] = temp_matrix.array
-            print("Matrix max value:", np.amax( self.matrix.array))
-            numbers.append(np.amax( self.matrix.array))
-        plot(numbers)
+            
+            if echo:            
+                print("Matrix max value:", np.amax( self.matrix.array))
+        
             
     
     def display(self):
