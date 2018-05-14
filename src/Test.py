@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #####################################################
 # Test.py
 # Johan Book
@@ -19,7 +20,6 @@ import numpy as np
 def test_matrix(echo=False, dim=17, tol=1e-10):
   """
   A function to evaluate the performance of the Matrix class.
-
   Parameters
   ----------
   echo : boolean
@@ -28,7 +28,6 @@ def test_matrix(echo=False, dim=17, tol=1e-10):
       dimension of used test matrix.
   tol : double
       tolerance 
-
   Returns
   -------
   boolean
@@ -58,12 +57,10 @@ def test_matrix(echo=False, dim=17, tol=1e-10):
 def test_image(path, path_compressed=None, path_uncompressed=None, echo=False, num=4):
   """
   A function to evaluate the performance of the Matrix class.
-
   Parameters
   ----------
   echo : boolean
       whether to write to stdout or not. Use True for debugging. Default False.
-
   Returns
   -------
   boolean
@@ -73,6 +70,7 @@ def test_image(path, path_compressed=None, path_uncompressed=None, echo=False, n
   # Load image
   image = Image(path)
   image.display()
+  b = np.array( image.matrix.array )
   
   # Compress
   image.compress(num)
@@ -85,6 +83,14 @@ def test_image(path, path_compressed=None, path_uncompressed=None, echo=False, n
   image.display()
   if not path_uncompressed == None:
     image.save(path_uncompressed)
+  c = np.array( image.matrix.array )
+  
+  # Estimate error
+  err = abs(b-c)
+  err = sum(err)/len(err)
+    
+  if echo:
+      print("Error", err, "per pixel")
   
   return True
 
@@ -92,8 +98,8 @@ def test_image(path, path_compressed=None, path_uncompressed=None, echo=False, n
 test_matrix(echo=True)
 
 # Test image
-test_image(
-  path                = 'C:/Users/bas12ban/Desktop/stuff.png',
-  path_compressed     = 'C:/Users/bas12ban/Desktop/compressed.jpg',
-  path_uncompressed   = 'C:/Users/bas12ban/Desktop/uncompressed.jpg',
+test_image(echo=True,
+  path                = 'C:/Users/nat13jbo/Desktop/kvinna2.jpg',
+  path_compressed     = 'C:/Users/nat13jbo/Desktop/compressed.jpg',
+  path_uncompressed   = 'C:/Users/nat13jbo/Desktop/uncompressed.jpg',
 )
