@@ -10,7 +10,7 @@ import numpy as np
 class Matrix:
 
     def __init__(self, array):
-        if not isinstance(array, ndarray):
+        if not isinstance(array, np.ndarray):
             raise TypeError('Expected a numpy array as argument.')
             
         self.array = array
@@ -22,7 +22,7 @@ class Matrix:
         return Matrix(self.array-other.array)
         
     def __mul__(self, other):
-        return Matrix(dot(self.array,other.array))
+        return Matrix(np.dot(self.array,other.array))
         
     def __pow__(self, other):
         return Matrix(self.array**other.array)
