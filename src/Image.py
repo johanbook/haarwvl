@@ -1,9 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu May 10 10:34:56 2018
-
-@author: bas12ban
-"""
+#####################################################
+# Image.py
+# Günther
+# bas12ban@student.lu.se
+# 2018-05-10
+#
+# This class is gay and so am I
+#####################################################
 
 import os
 import scipy.misc as sm
@@ -11,25 +13,25 @@ from scipy.misc import toimage
 
 
 class Image:
-    def __init__(self,path=None):
+    def __init__(self, path):
         '''
         Class representing an grayscale image. Imported images can be compressed using the Haar Wavelet transformation, compressed images can be uncompressed.
         Input: path (string) provided by user, given in one of the two following forms, ex1: 'C:\\users\\documents' or ex2: 'C:/users/documents', if these forms are ignored, nothing will work.
         '''        
         
         # comments
-        if path == None:
-            raise Exception('No path was given.')
-        elif not isinstance(path,str):
+        if not isinstance(path,str):
             raise TypeError('The path was not given as a string. Please put citation marks around the path.')
-        elif os.path.exists(path) == False:
-            raise Exception('Path does not exist. Try again.')
+        if os.path.exists(path) == False:
+            raise Exception('Path does not exist: '+path)
         
         # comments
         self.path = path
         self.matrix = Matrix(sm.imread(self.path, True))
         self.reshape()
         
+        # default number of compressions
+        # is used in uncompressed() if no argument is given
         self._num = 0 
         
     def reshape(self):
