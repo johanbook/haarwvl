@@ -7,98 +7,120 @@ Created on Mon May  7 13:34:28 2018
 import numpy as np
 from scipy import *
 
-def _isnumber(x):
-    return isinstance(x, int) or isinstance(x, float)
-
-def _inverse(matrix, weight):
-    if weight == sqrt(2):
-        Winverse = matrix.transpose()
-    else:
-        Winverse = martix.inverse()
-    return Winverse
-
-def transform(matrix, weight = sqrt(2)):
+def transform(matrix):
     '''
-    Compresses an image ( stored in 'matrix' ) using the Haar Wavelet Transformation method
-    with a certain weight ( deafault sqrt(2) ).
+    (Frank Johansson, nat13fjo@student.lu.se)
+    Compresses an image ( stored in 'matrix' )
+    using the Haar Wavelet Transformation method.
     Returns the compressed image as a Matrix
     '''
-    if isinstance(matrix, Matrix):
-        if _isnumber(weight):
-            Wm, Wn = wavelet(matrix, weight)
-            Wn = _inverse(Wn, weight)
-            return Wm * matrix * Wn
-        else:
-            raise TypeError ('Expects a real number weight.')
+    
+    # Check if the argument is a Matrix,
+    # creates the transformation matrices
+    # and performs the transformation
+    if not isinstance(matrix, Matrix):
+       raise TypeError ('Expects an image as a Matrix. Got:', type(matrix))
     else:
-        raise TypeError ('Expects an image as a Matrix.')
+       Wm, Wn = wavelet(matrix)
+       Wn = Wn.transpose()
+       return Wm * matrix * Wn        
 
-def inverse_transform(matrix, weight = sqrt(2)):
+def inverse_transform(matrix):
     '''
-    Uncompresses an image ( stored in 'matrix' ) using the Haar Wavelet Transformation method
-    with a certain weight ( deafault sqrt(2) ).
+    (Frank Johansson, nat13fjo@student.lu.se)
+    Uncompresses an image ( stored in 'matrix' )
+    using the Haar Wavelet Transformation method.
     Returns the uncompressed image as a Matrix
     '''
-    if isinstance(matrix, Matrix):
-        if _isnumber(weight):
-            Wm, Wn = wavelet(matrix, weight)
-            Wm = _inverse(Wm, weight)
-            return Wm * matrix * Wn
-        else:
-            raise TypeError ('Expects a real number weight.')
+    
+    # Check if the argument is a Matrix,
+    # creates the transformation matrices
+    # and performs the transformation
+    if not isinstance(matrix, Matrix):
+        raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
     else:
-        raise TypeError ('Expects an image as a Matrix.', type(matrix) )
-    
+        Wm, Wn = wavelet(matrix)
+        Wm = Wm.transpose()
+        return Wm * matrix * Wn
 
-def wavelet(matrix, weight):
+def wavelet(matrix):
     '''
-    Constructs the Discrete Haar Wavelet Transformation matrix and its inverse.
-    Depending on the chosen weight ( which determines whether the matrix is orthagonal ),
-    the inverse is either set as the transpose or calculated normally.
+    (Frank Johansson, nat13fjo@student.lu.se)
+    Constructs the Discrete Haar Wavelet Transformation matrices,
+    compatible with the argument matrix, and returns them.
     '''
     
+    # Initialize transformation matrices
     Wm = Matrix(np.zeros((matrix.shape[0],matrix.shape[0])))
     Wn = Matrix(np.zeros((matrix.shape[1],matrix.shape[1])))
     
+    # Create indices for element assignment
     i,j = Wm.indices()
     k,l = Wn.indices()
-    factor = weight/2.
     
+    # The factor to set the transformation matrix element to
+    factor = sqrt(2)/2.
+    
+    # Finalize the LHS transformation matrix
     Wm.array[2*i==j] = factor
     Wm.array[2*i==j-1] = factor
     Wm.array[2*i-Wm.shape[0]==j] = -factor
     Wm.array[2*i-Wm.shape[0]==j-1] = factor
     
+    # Finalize the RHS transformation matrix
     Wn.array[2*k==l] = factor
     Wn.array[2*k==l-1] = factor
     Wn.array[2*k-Wn.shape[0]==l] = -factor
     Wn.array[2*k-Wn.shape[0]==l-1] = factor
     
+    # Return the LHS and the RHS transformation matrices
     return Wm, Wn
 
 def extransform ( matrix ):
     '''
-    Compresses an image ( stored in 'matrix' ) using the Haar Wavelet Transformation method.
+    (Frank Johansson, nat13fjo@student.lu.se)
+    Compresses an image ( stored in 'matrix' )
+    using the Haar Wavelet Transformation method.
     The calculations are made explicitly without the use of matrices.
     Returns the compressed image as a Matrix
     '''
-    return Matrix( np.array( [ ( matrix[m+1] + matrix[m] ) / 2
+    # Check if the argument is a Matrix,
+    # construct the transformation by adding two lists
+    # and use the result to create a matrix
+    if not isinstance(matrix, Matrix):
+        raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
+    else:
+        return Matrix( np.array( [ ( matrix[m+1] + matrix[m] ) / 2
                               for m in range( matrix.shape[0] - 1 ) ]
             + [ ( matrix[n+1] - matrix[n] ) / 2 
                for n in range( matrix.shape[0] - 1 ) ] ) )
     
 def exinverse_transform ( matrix ):
     '''
-    Uncompresses an image ( stored in 'matrix' ) using the Haar Wavelet Transformation method.
+    (Frank Johansson, nat13fjo@student.lu.se)
+    Uncompresses an image ( stored in 'matrix' )
+    using the Haar Wavelet Transformation method.
     The calculations are made explicitly without the use of matrices.
     Returns the uncompressed image as a Matrix
     '''
-    odd = [ matrix[n] - matrix[ n + matrix.shape[0] / 2 ]
-    for n in range( matrix.shape[0] / 2 ) ]
-    even = [ matrix[n] + matrix[ n + matrix.shape[0] / 2 ]
-    for n in range( matrix.shape[0] / 2 ) ]
-    inverselist = []
-    for n in range(len(odd)):
-        inverselist.append(odd[n])
-        inverselist.append(even[n])
-    return Matrix( np.array( inverselist ) )
+    
+    # Check if the argument is a Matrix
+    if not isinstance(matrix, Matrix):
+        raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
+    else:
+        
+        # Construct the odd indexed elements
+        odd = [ matrix[n] - matrix[ n + matrix.shape[0] / 2 ]
+            for n in range( matrix.shape[0] / 2 ) ]
+    
+        # Construct the even indexed elements
+        even = [ matrix[n] + matrix[ n + matrix.shape[0] / 2 ]
+            for n in range( matrix.shape[0] / 2 ) ]
+    
+        # Add the odd and even elements alternatingly
+        # to create the transformed matrix
+        inverselist = []
+        for n in range(len(odd)):
+            inverselist.append(odd[n])
+            inverselist.append(even[n])
+        return Matrix( np.array( inverselist ) )
