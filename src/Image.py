@@ -16,6 +16,8 @@ import matplotlib.pylab as plb
 class Image:
     def __init__(self, path):
         '''
+        (Björn Annby-Andersson, bas12ban@student.lu.se
+         Johan Book, nat13jbo@student.lu.se)
         Class representing an grayscale image. Imported images can be compressed 
         using the Haar Wavelet transformation, compressed images can be uncompressed.
         Input: path (string) provided by user, given in one of the two following forms, 
