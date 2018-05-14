@@ -19,10 +19,9 @@ def transform(matrix):
     # and performs the transformation
     if not isinstance(matrix, Matrix):
        raise TypeError ('Expects an image as a Matrix. Got:', type(matrix))
-    else:
-       Wm, Wn = wavelet(matrix)
-       Wn = Wn.transpose()
-       return Wm * matrix * Wn        
+    Wm, Wn = wavelet(matrix)
+    Wn = Wn.transpose()
+    return Wm * matrix * Wn        
 
 def inverse_transform(matrix):
     '''
@@ -36,10 +35,9 @@ def inverse_transform(matrix):
     # and performs the transformation
     if not isinstance(matrix, Matrix):
         raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
-    else:
-        Wm, Wn = wavelet(matrix)
-        Wm = Wm.transpose()
-        return Wm * matrix * Wn
+    Wm, Wn = wavelet(matrix)
+    Wm = Wm.transpose()
+    return Wm * matrix * Wn
 
 def wavelet(matrix):
     '''
@@ -85,11 +83,10 @@ def extransform ( matrix ):
     # and use the result to create a matrix
     if not isinstance(matrix, Matrix):
         raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
-    else:
-        return Matrix( np.array( [ ( matrix[m+1] + matrix[m] ) / 2
+    return Matrix( np.array( [ ( matrix[m+1] + matrix[m] ) / 2
                               for m in range( matrix.shape[0] - 1 ) ]
-            + [ ( matrix[n+1] - matrix[n] ) / 2 
-               for n in range( matrix.shape[0] - 1 ) ] ) )
+                            + [ ( matrix[n+1] - matrix[n] ) / 2 
+                                for n in range( matrix.shape[0] - 1 ) ] ) )
     
 def exinverse_transform ( matrix ):
     '''
@@ -102,20 +99,19 @@ def exinverse_transform ( matrix ):
     # Check if the argument is a Matrix
     if not isinstance(matrix, Matrix):
         raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
-    else:
-        
-        # Construct the odd indexed elements
-        odd = [ matrix[n] - matrix[ n + matrix.shape[0] / 2 ]
-            for n in range( matrix.shape[0] / 2 ) ]
+            
+    # Construct the odd indexed elements
+    odd = [ matrix[n] - matrix[ n + matrix.shape[0] / 2 ]
+        for n in range( matrix.shape[0] / 2 ) ]
     
-        # Construct the even indexed elements
-        even = [ matrix[n] + matrix[ n + matrix.shape[0] / 2 ]
-            for n in range( matrix.shape[0] / 2 ) ]
+    # Construct the even indexed elements
+    even = [ matrix[n] + matrix[ n + matrix.shape[0] / 2 ]
+        for n in range( matrix.shape[0] / 2 ) ]
     
-        # Add the odd and even elements alternatingly
-        # to create the transformed matrix
-        inverselist = []
-        for n in range(len(odd)):
-            inverselist.append(odd[n])
-            inverselist.append(even[n])
-        return Matrix( np.array( inverselist ) )
+    # Add the odd and even elements alternatingly
+    # to create the transformed matrix
+    inverselist = []
+    for n in range(len(odd)):
+        inverselist.append(odd[n])
+        inverselist.append(even[n])
+    return Matrix( np.array( inverselist ) )
