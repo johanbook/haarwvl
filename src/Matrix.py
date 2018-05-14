@@ -14,7 +14,6 @@ class Matrix:
             raise TypeError('Expected a numpy array as argument.')
             
         self.array = array
-        self.shape = self.array.shape
         
     def __add__(self, other):
         return Matrix(self.array+other.array)
@@ -39,6 +38,10 @@ class Matrix:
         for x in self.array:
             s+='\n'+str(x)
         return s+'\n'    
+    
+    @property
+    def shape(self):
+        return array.shape
         
     def indices(self):
         return np.indices(self.shape)
