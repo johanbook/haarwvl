@@ -18,12 +18,11 @@ def transform(matrix):
     # Check if the argument is a Matrix,
     # creates the transformation matrices
     # and performs the transformation
-#    if not isinstance(matrix, Matrix):
-#       raise TypeError ('Expects an image as a Matrix. Got:', type(matrix))
+    if not isinstance(matrix, Matrix):
+       raise TypeError ('Expects an image as a Matrix. Got:', type(matrix))
     Wm, Wn = wavelet(matrix)
     Wn = Wn.transpose()
-    return Wm * matrix * Wn # Comment out for testing
-    #return np.dot(Wm, np.dot(matrix,Wn)) # Uncomment for testing
+    return Wm * matrix * Wn
 
 def inverse_transform(matrix):
     '''
@@ -36,12 +35,11 @@ def inverse_transform(matrix):
     # Check if the argument is a Matrix,
     # creates the transformation matrices
     # and performs the transformation
-#    if not isinstance(matrix, Matrix):
-#        raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
+    if not isinstance(matrix, Matrix):
+        raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
     Wm, Wn = wavelet(matrix)
     Wm = Wm.transpose()
-    return Wm * matrix * Wn # Comment out for testing
-    #return np.dot(Wm, np.dot(matrix,Wn)) # Uncomment for testing
+    return Wm * matrix * Wn
 
 def wavelet(matrix):
     '''
@@ -50,20 +48,13 @@ def wavelet(matrix):
     compatible with the argument matrix, and returns them.
     '''
     
-    # Initialize transformation matrices, comment out for testing
+    # Initialize transformation matrices
     Wm = Matrix(np.zeros((matrix.shape[0],matrix.shape[0])))
     Wn = Matrix(np.zeros((matrix.shape[1],matrix.shape[1])))
 
     # Create indices for element assignment
     i,j = Wm.indices()
     k,l = Wn.indices()    
-#    # Initialize transformation matrices, uncomment for testing
-#    Wm = np.zeros((matrix.shape[0],matrix.shape[0]))
-#    Wn = np.zeros((matrix.shape[1],matrix.shape[1]))
-    
-#    #Create indices for element assignment
-#    i,j = np.indices(Wm.shape)
-#    k,l = np.indices(Wn.shape) 
     
     # The factor to set the transformation matrix element to
     factor = sqrt(2)/2.
@@ -79,19 +70,6 @@ def wavelet(matrix):
     Wn.array[2*k==l-1] = factor
     Wn.array[2*k-Wn.shape[0]==l] = -factor
     Wn.array[2*k-Wn.shape[0]==l-1] = factor
-
-        
-#    # Finalize the LHS transformation matrix
-#    Wm[2*i==j] = factor
-#    Wm[2*i==j-1] = factor
-#    Wm[2*i-Wm.shape[0]==j] = -factor
-#    Wm[2*i-Wm.shape[0]==j-1] = factor
-#    
-#    # Finalize the RHS transformation matrix
-#    Wn[2*k==l] = factor
-#    Wn[2*k==l-1] = factor
-#    Wn[2*k-Wn.shape[0]==l] = -factor
-#    Wn[2*k-Wn.shape[0]==l-1] = factor
     
     # Return the LHS and the RHS transformation matrices
     return Wm, Wn
@@ -137,35 +115,25 @@ def exinverse_transform ( matrix ):
     # Check if the argument is a Matrix
     if not isinstance(matrix, Matrix):
         raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
-        
-#    # Construct the odd indexed elements
-#    odd = [ matrix.array[n] - matrix.array[ n + matrix.shape[0] / 2 ]
-#            for n in range( matrix.shape[0] / 2 ) ]
-#    
-#    # Construct the even indexed elements
-#    even = [ matrix.array[n] + matrix.array[ n + matrix.shape[0] / 2 ]
-#        for n in range( matrix.shape[0] / 2 ) ]
-#    
-#    # Add the odd and even elements alternatingly
-#    # to create the transformed matrix
-#    inverselist = []
-#    for n in range(len(odd)):
-#        inverselist.append(odd[n])
-#        inverselist.append(even[n])
-#    return Matrix( np.array( inverselist ) )
-    
-    topleft = np.zeros((matrix.shape[0]/2,matrix.shape[1]/2))
-    topright = np.zeros((matrix.shape[0]/2,matrix.shape[1]/2))
-    bottomleft = np.zeros((matrix.shape[0]/2,matrix.shape[1]/2))
-    bottomright = np.zeros((matrix.shape[0]/2,matrix.shape[1]/2))
+
+    transformed = np.zeros((matrix.shape[0],matrix.shape[1]))
     for m in range(matrix.shape[0]/2):
         for n in range(matrix.shape[1]/2):
-            topleft[m][n] = ( matrix.array[2*m][2*n] + matrix.array[2*m][2*n+1] 
-                               + matrix.array[2*m+1][2*n] + matrix.array[2*m+1][2*n+1]) / 2
-            topright[m][n] = ( -matrix.array[2*m][2*n] + matrix.array[2*m][2*n+1] 
-                               - matrix.array[2*m+1][2*n] + matrix.array[2*m+1][2*n+1]) / 2
-            bottomleft[m][n] = ( -matrix.array[2*m][2*n] - matrix.array[2*m][2*n+1] 
-                               + matrix.array[2*m+1][2*n] + matrix.array[2*m+1][2*n+1]) / 2
-            bottomright[m][n] = ( -matrix.array[2*m][2*n] + matrix.array[2*m][2*n+1] 
-                               + matrix.array[2*m+1][2*n] - matrix.array[2*m+1][2*n+1]) / 2
-    return Matrix(np.vstack((np.hstack((topleft,topright)),np.hstack((bottomleft,bottomright)))))
+            transformed[2*m][2*n] = (matrix.array[m][n] - 
+                                    matrix.array[m][n+matrix.shape[1]/2] -
+                                    matrix.array[m+matrix.shape[0]/2][n] -
+                                    matrix.array[m+matrix.shape[0]/2][n+matrix.shape[1]/2]) / 4
+            transformed[2*m][2*n+1] = (matrix.array[m][n] + 
+                                        matrix.array[m][n+matrix.shape[1]/2] -
+                                        matrix.array[m+matrix.shape[0]/2][n] +
+                                        matrix.array[m+matrix.shape[0]/2][n+matrix.shape[1]/2]) / 4
+            transformed[2*m+1][2*n] = (matrix.array[m][n] - 
+                                        matrix.array[m][n+matrix.shape[1]/2] +
+                                        matrix.array[m+matrix.shape[0]/2][n] +
+                                        matrix.array[m+matrix.shape[0]/2][n+matrix.shape[1]/2]) / 4
+            transformed[2*m+1][2*n+1] = (matrix.array[m][n] + 
+                                        matrix.array[m][n+matrix.shape[1]/2] +
+                                        matrix.array[m+matrix.shape[0]/2][n] -
+                                        matrix.array[m+matrix.shape[0]/2][n+matrix.shape[1]/2]) / 4
+
+    return Matrix(transformed)
