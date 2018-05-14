@@ -33,7 +33,7 @@ class Image:
         
         # default number of compressions
         # is used in uncompressed() if no argument is given
-        self._num = 0 
+        self._num = 0
         
     def reshape(self):
         rows, cols = self.matrix.shape
@@ -66,13 +66,28 @@ class Image:
                 #toimage(self.invert(temp_matrix).array).show()
                 self.matrix = Matrix( self.matrix.array )                
                 
-    def uncompress(self, num=-1):
+    def uncompress(self, num=-1, echo=False):
         if num < 0:
             num = self._num
-        
+            
+        for n in range(num-1,-1,-1):
+                rows, cols = shape(self.matrix.array)
+
+                temp_matrix = Matrix( self.matrix.array[0:rows/2**(n),0:cols/2**(n)] )
+                
+                if echo:
+                    toimage(temp_matrix.array).show()
+                
+                #print(shape(temp_matrix.array))
+                temp_matrix = inverse_transform(temp_matrix)
+                #self.matrix = temp_matrix
+                #toimage(self.invert(temp_matrix).array).show()
+                self.matrix.array[0:rows/2**(n),0:cols/2**(n)] = temp_matrix.array
+                #toimage(self.invert(temp_matrix).array).show()
+                self.matrix = Matrix( self.matrix.array ) 
         
             
-        self.matrix = inverse_transform(self.matrix)
+        #self.matrix = inverse_transform(self.matrix)
     
     def display(self):
         toimage(self.matrix.array).show()
