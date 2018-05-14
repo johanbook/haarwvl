@@ -1,8 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Apr  9 10:35:12 2018
-@author: dvdli
-"""
+#####################################################
+# Matrix.py
+# David Linehan
+# nat13dli@student.lu.se 
+# 2018-05-09
+#####################################################
+
 import numpy as np
 
 class Matrix:
@@ -10,6 +12,7 @@ class Matrix:
     def __init__(self, array):
         if not isinstance(array, ndarray):
             raise TypeError('Expected a numpy array as argument.')
+            
         self.array = array
         self.shape = self.array.shape
         
@@ -39,6 +42,3 @@ class Matrix:
         
     def indices(self):
         return np.indices(self.shape)
-        
-    def array(self):
-        return self.array    
