@@ -77,7 +77,7 @@ class Image:
             if echo:
                 toimage(temp_matrix.array).show()
 
-            temp_matrix = transform(temp_matrix)
+            temp_matrix = extransform(temp_matrix) if explicit else transform(temp_matrix)
            
             if echo: 
                 print(temp_matrix.shape)
@@ -107,7 +107,7 @@ class Image:
             if echo:
                 toimage(temp_matrix.array).show()
                 
-            temp_matrix = inverse_transform(temp_matrix)
+            temp_matrix = exinverse_transform(temp_matrix) if explicit else inverse_transform(temp_matrix)
             temp_matrix.array = 255*temp_matrix.array/np.amax(temp_matrix.array)
             self.matrix.array[0:int(rows/2**n),0:int(cols/2**n)] = temp_matrix.array
             
