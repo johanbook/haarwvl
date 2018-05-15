@@ -25,7 +25,10 @@ class Matrix:
         return Matrix(np.dot(self.array,other.array))
         
     def __pow__(self, other):
-        return Matrix(self.array**other.array)
+        result = np.array(self.array)
+        for _ in range(1, other):
+            result = np.dot(result,result)
+        return Matrix(result)
         
     def inverse(self):
         return Matrix(np.linalg.inv(self.array))
