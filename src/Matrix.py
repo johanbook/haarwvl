@@ -11,7 +11,7 @@ class Matrix:
 
     def __init__(self, array):
         if not isinstance(array, np.ndarray):
-            raise TypeError('Expected a numpy array as argument.')
+            raise TypeError('Expected numpy array as argument, got', type(array))
             
         self.array = array
         
