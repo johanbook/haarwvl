@@ -28,10 +28,16 @@ PATH = '../res/python.jpg'
 
 # Test matrix class
 class TestMatrix(unittest.TestCase):
+    # test addition, subtraction and multiplication
     def test_arithmetics(self):
-        i = Matrix(np.eye(2))
-        # self.assertAlmostEqual
-    
+        i = np.eye(2)
+        m = Matrix(np.eye(2))
+
+        self.assertTrue(np.allclose((m+m).array, 2*i))
+        self.assertTrue(np.allclose((m-m).array, 0*i))
+        self.assertTrue(np.allclose((m*m).array, i))
+
+    # test Matrix.inverse()
     def test_inverse(self):
         dim = 3
         a = Matrix(np.random.rand(dim, dim))
@@ -39,9 +45,13 @@ class TestMatrix(unittest.TestCase):
         q = np.sum(i.array - np.eye(dim))
   
         self.assertAlmostEqual(q, 0)
-        
+
+    # test Matrix.transpose()
     def test_transpose(self):
-        pass
+        i = np.eye(3)
+        a = Matrix(i).transpose()
+
+        self.assertTrue(np.allclose(a.array, i.transpose()))
 
 
 # Test image class
@@ -53,12 +63,12 @@ class TestImage(unittest.TestCase):
     def test_compression(self):
         # Load image
         image = Image(PATH)
-        b = np.array(image.matrix.array)
+        b = image.matrix.array.copy
 
         # Compress and Uncompress
         image.compress(4)
         image.uncompress(4)
-        c = np.array(image.matrix.array)
+        c = image.matrix.array.copy
   
         # Estimate MAE error
         err = abs(b-c)
@@ -82,24 +92,26 @@ class TestImage(unittest.TestCase):
             self.assertTrue(False)
 
 
-# Transformation class
+# Test the transformation to make sure a transformation
+# and an inverse transformation acts as an identity transform
 class TestTransformation(unittest.TestCase):
     def _generate_matrix():
         return Matrix(np.random.rand(8, 8))
-    
-    def test_id(self):
+
+    def _transform(self, transform, inverse):
         original = TestTransformation._generate_matrix()
-        transformed = inverse_transform(transform(original))
+        transformed = inverse(transform(original))
         diff = (original - transformed).array
         self.assertAlmostEqual(np.sum(abs(diff)), 0)
+
+    def test_id(self):
+        self._transform(transform, inverse_transform)
     
     def test_exid(self):
-        original = TestTransformation._generate_matrix()
-        transformed = exinverse_transform(extransform(original))
-        diff = (original - transformed).array 
-        self.assertAlmostEqual(np.sum(abs(diff)), 0)
+        self._transform(extransform, exinverse_transform)
 
 
+# load all tests if this module is explicitly run
 if __name__ == '__main__':
     suite = unittest.TestSuite([
         unittest.TestLoader().loadTestsFromTestCase(TestMatrix),

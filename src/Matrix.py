@@ -28,7 +28,7 @@ class Matrix:
     def __pow__(self, other):
         result = np.array(self.array)
         for _ in range(1, other):
-            result = np.dot(result,result)
+            result = np.dot(result, result)
         return Matrix(result)
         
     def inverse(self):
