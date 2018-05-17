@@ -85,8 +85,8 @@ if __name__ == '__main__':
     a = RGBImage(path)
     a.display()
 
-    a.compress(2)
+    a.compress(1)
     a.display()
 
-    a.uncompress(2)
+    a.uncompress(1)
     a.display()
