@@ -17,78 +17,94 @@
 
 import numpy as np
 import unittest
+import os
+
+from src.Matrix import Matrix
+from src.Image import Image
+from src.Transform import *
+
+PATH = '../res/python.jpg'
+
 
 # Test matrix class
 class TestMatrix(unittest.TestCase):
     def test_arithmetics(self):
-        I = Matrix( np.eye(2) )
-        #self.assertAlmostEqual
+        i = Matrix(np.eye(2))
+        # self.assertAlmostEqual
     
     def test_inverse(self):
         dim = 3
-        a = Matrix( np.random.rand(dim,dim) )
+        a = Matrix(np.random.rand(dim, dim))
         i = a*a.inverse() 
         q = np.sum(i.array - np.eye(dim))
   
-        self.assertAlmostEqual(q,0)
+        self.assertAlmostEqual(q, 0)
         
     def test_transpose(self):
         pass
 
+
 # Test image class
 class TestImage(unittest.TestCase):
-    def setup(self):
-        import os    
-    
     def test_badinput(self):
-      self.assertRaises(Exception, Image, None)
+        self.assertRaises(Exception, Image, None)
     
-    @unittest.skipIf(not os.path.exists(path), 'Test file does not exist: '+path)
+    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: '+PATH)
     def test_compression(self):
-      # Load image
-      image = Image(path)
-      b = np.array( image.matrix.array )
-      
-      # Compress and Uncompress
-      image.compress(num)
-      image.uncompress(num)
-      c = np.array( image.matrix.array )
+        # Load image
+        image = Image(PATH)
+        b = np.array(image.matrix.array)
+
+        # Compress and Uncompress
+        image.compress(4)
+        image.uncompress(4)
+        c = np.array(image.matrix.array)
   
-      # Estimate MAE error
-      err = abs(b-c)
-      err = sum(err)/len(err)
+        # Estimate MAE error
+        err = abs(b-c)
+        err = sum(err)/len(err)
+
+        # The error can be large even though the image is fine
+        self.assertLessEqual(err, 1.e+3)
       
-      # The error can be large even though the image is fine
-      self.assertLessEqual(err, 1.e+3)
-      
-    @unittest.skipIf(not os.path.exists(path), 'Test file does not exist: '+path)  
+    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: '+PATH)
     def test_save(self):
-      image = Image(path)
-      image.save('test')
-      
- # Transformation class     
+        test_path = '../test.png'
+        image = Image(PATH)
+        try:
+            image.save(test_path)
+        except Exception:
+            self.assertTrue(False)
+
+        if os.path.exists(test_path):
+            os.remove(test_path)
+        else:
+            self.assertTrue(False)
+
+
+# Transformation class
 class TestTransformation(unittest.TestCase):
     def _generate_matrix():
-        return Matrix( np.random.rand(8,8) )
+        return Matrix(np.random.rand(8, 8))
     
     def test_id(self):
-        original = TransformationTest._generate_matrix()
-        transformed = inverse_transform( transform(original) )
+        original = TestTransformation._generate_matrix()
+        transformed = inverse_transform(transform(original))
         diff = (original - transformed).array
         self.assertAlmostEqual(np.sum(abs(diff)), 0)
     
     def test_exid(self):
-        original = TransformationTest._generate_matrix()
-        transformed = exinverse_transform( extransform(original) )
+        original = TestTransformation._generate_matrix()
+        transformed = exinverse_transform(extransform(original))
         diff = (original - transformed).array 
         self.assertAlmostEqual(np.sum(abs(diff)), 0)
 
-if __name__=='__main__':
-    path                = 'C:/Users/nat13jbo/Desktop/kvinna2.jpg'
-    
-    matrixTest = unittest.TestLoader().loadTestsFromTestCase(TestMatrix)
-    transformationTest = unittest.TestLoader().loadTestsFromTestCase(TestTransformation)
-    imageTest = unittest.TestLoader().loadTestsFromTestCase(TestImage)
-    suite = unittest.TestSuite( [matrixTest, transformationTest, imageTest] )
+
+if __name__ == '__main__':
+    suite = unittest.TestSuite([
+        unittest.TestLoader().loadTestsFromTestCase(TestMatrix),
+        unittest.TestLoader().loadTestsFromTestCase(TestTransformation),
+        unittest.TestLoader().loadTestsFromTestCase(TestImage),
+    ])
     
     unittest.TextTestRunner(verbosity=2).run(suite)

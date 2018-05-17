@@ -7,6 +7,7 @@
 
 import numpy as np
 
+
 class Matrix:
 
     def __init__(self, array):
@@ -22,7 +23,7 @@ class Matrix:
         return Matrix(self.array-other.array)
         
     def __mul__(self, other):
-        return Matrix(np.dot(self.array,other.array))
+        return Matrix(np.dot(self.array, other.array))
         
     def __pow__(self, other):
         result = np.array(self.array)
@@ -39,7 +40,7 @@ class Matrix:
     def __repr__(self):
         s = ""
         for x in self.array:
-            s+='\n'+str(x)
+            s += '\n'+str(x)
         return s+'\n'    
     
     @property

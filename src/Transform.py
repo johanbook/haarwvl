@@ -5,7 +5,10 @@ Created on Mon May  7 13:34:28 2018
 """
 
 import numpy as np
+
 from scipy import *
+from src.Matrix import Matrix
+
 
 def transform(matrix):
     '''
@@ -53,28 +56,28 @@ def _wavelet(matrix):
     Wn = Matrix(np.zeros((matrix.shape[1],matrix.shape[1])))
 
     # Create indices for element assignment
-    i,j = Wm.indices()
-    k,l = Wn.indices()    
+    i, j = Wm.indices()
+    k, l = Wn.indices()
     
     # The factor to set the transformation matrix element to
     factor = sqrt(2)/2.
     
     # Finalize the LHS transformation matrix
-    Wm.array[2*i==j] = factor
-    Wm.array[2*i==j-1] = factor
-    Wm.array[2*i-Wm.shape[0]==j] = -factor
-    Wm.array[2*i-Wm.shape[0]==j-1] = factor
+    Wm.array[2*i == j] = factor
+    Wm.array[2*i == j-1] = factor
+    Wm.array[2*i-Wm.shape[0] == j] = -factor
+    Wm.array[2*i-Wm.shape[0] == j-1] = factor
     
     # Finalize the RHS transformation matrix
-    Wn.array[2*k==l] = factor
-    Wn.array[2*k==l-1] = factor
-    Wn.array[2*k-Wn.shape[0]==l] = -factor
-    Wn.array[2*k-Wn.shape[0]==l-1] = factor
+    Wn.array[2*k == l] = factor
+    Wn.array[2*k == l-1] = factor
+    Wn.array[2*k-Wn.shape[0] == l] = -factor
+    Wn.array[2*k-Wn.shape[0] == l-1] = factor
     
     # Return the LHS and the RHS transformation matrices
     return Wm, Wn
 
-def extransform ( matrix ):
+def extransform( matrix ):
     '''
     (Frank Johansson, nat13fjo@student.lu.se)
     Compresses an image ( stored in 'matrix' )
@@ -120,7 +123,7 @@ def exinverse_transform ( matrix ):
     
     # Check if the argument is a Matrix
     if not isinstance(matrix, Matrix):
-        raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
+        raise TypeError('Expects an image as a Matrix. Got:', type(matrix))
     
     # Create useful variables
     a, b = int(matrix.shape[0]), int(matrix.shape[1])

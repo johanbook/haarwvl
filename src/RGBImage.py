@@ -1,73 +1,82 @@
 # -*- coding: utf-8 -*-
 #####################################################
-# Test.py
+# RGBImage.py
 # Johan Book
 # johanbook@hotmail.com
-# 2018-05-07
+# 2018-05-12
 #
-# Methods to probe the performance of the rest of
-# the package.
-# Methods:
-# - test_matrix() : tests the matrix class
-# - test_image()  : tests the image class 
-# If this module is run as a script both of these
-# methods will be callled.
+# THIS CLASS DOES NOT WORK
+# Extends an image to support colour.
 #####################################################
 
 import os
 import numpy as np
 import scipy.misc as sm
 import matplotlib.pyplot as plt
-from scipy.misc import toimage
+
+from src.Image import Image
+
 
 class RGBImage:
     def __init__(self, path):
-        '''
+        """
         An extension of Image.
-        '''        
+        """
         
-        # comments
+        # Check that path exists
         if not isinstance(path,str):
             raise TypeError('The path was not given as a string. Please put citation marks around the path.')
         if not os.path.exists(path):
             raise Exception('Path does not exist: ' + path)
+
+        print('WARNING: Compression does not work correctly for this class (RGBImage)')
         
         # default number of compressions
         # is used in uncompressed() if no argument is given
         self._num = 0        
         
-        # comments
+        # Read file and store in separate grayscale images
         arr = sm.imread(path)
         rows, cols, colors = arr.shape
-        imgs= np.split(arr,colors,2)
+        images = np.split(arr, colors, 2)
         self._images = []
-        for img in imgs:
-            Image(np.squeeze(img, axis=2)).display()
-            self._images.append(Image(np.squeeze(img, axis=2)))
+        for image in images:
+            Image(np.squeeze(image, axis=2)).display()
+            self._images.append(Image(np.squeeze(image, axis=2)))
         
     def _reform(self):
-        r,c = self._images[0].matrix.array.shape
-        arrs = []
+        """
+        Returns an array with the image data.
+        """
+        r, c = self._images[0].matrix.array.shape
+        arrays = []
         for image in self._images:
-            arrs.append(image.matrix.array.reshape(r,c,1)) 
-        return np.concatenate(arrs, axis=2)
+            arrays.append(image.matrix.array.reshape(r, c, 1))
+        return np.concatenate(arrays, axis=2)
             
     def compress(self, num=1):
+        """
+        Compresses the image.
+        """
         for image in self._images:
             image.compress(num)
     
     def uncompress(self, num=1):
+        """
+        Uncompresses the image.
+        """
         for image in self._images:
             image.uncompress(num)
         
     def display(self):
-        x = self._reform()
-        print(type(x), x.shape)
-        plt.imshow(x)
-        #for img in self._images:
-        #    img.display()
-        #toimage(self._reform).show()
+        """
+        Displays the colored image.
+        """
+        plt.imshow(self._reform())
         
-    def invert():
+    def invert(self):
+        """
+        Inverts each color of the image, ie. (r,g,b) -> (255-r, 255-g, 255-b).
+        """
         for image in self._images:
             image.invert()
