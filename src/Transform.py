@@ -87,12 +87,13 @@ def extransform ( matrix ):
     # and use the result to create a matrix
     if not isinstance(matrix, Matrix):
         raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
-    topleft = np.zeros((matrix.shape[0]/2,matrix.shape[1]/2))
-    topright = np.zeros((matrix.shape[0]/2,matrix.shape[1]/2))
-    bottomleft = np.zeros((matrix.shape[0]/2,matrix.shape[1]/2))
-    bottomright = np.zeros((matrix.shape[0]/2,matrix.shape[1]/2))
-    for m in range(matrix.shape[0]/2):
-        for n in range(matrix.shape[1]/2):
+    a, b = int(matrix.shape[0] / 2), int(matrix.shape[1] / 2)
+    topleft = np.zeros((a,b))
+    topright = np.zeros((a,b))
+    bottomleft = np.zeros((a,b))
+    bottomright = np.zeros((a,b))
+    for m in range(int(matrix.shape[0]/2)):
+        for n in range(int(matrix.shape[1]/2)):
             topleft[m][n] = ( matrix.array[2*m][2*n] + matrix.array[2*m][2*n+1] 
                                + matrix.array[2*m+1][2*n] + matrix.array[2*m+1][2*n+1]) / 2
             topright[m][n] = ( -matrix.array[2*m][2*n] + matrix.array[2*m][2*n+1] 
@@ -115,25 +116,26 @@ def exinverse_transform ( matrix ):
     # Check if the argument is a Matrix
     if not isinstance(matrix, Matrix):
         raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
-
-    transformed = np.zeros((matrix.shape[0],matrix.shape[1]))
-    for m in range(matrix.shape[0]/2):
-        for n in range(matrix.shape[1]/2):
+    a, b = int(matrix.shape[0]), int(matrix.shape[1])
+    c, d = int(a/2) , int(b/2)
+    transformed = np.zeros((a, b))
+    for m in range(c):
+        for n in range(d):
             transformed[2*m][2*n] = (matrix.array[m][n] - 
-                                    matrix.array[m][n+matrix.shape[1]/2] -
-                                    matrix.array[m+matrix.shape[0]/2][n] -
-                                    matrix.array[m+matrix.shape[0]/2][n+matrix.shape[1]/2]) / 4
+                                    matrix.array[m][n+c] -
+                                    matrix.array[m+d][n] -
+                                    matrix.array[m+c][n+d]) / 2
             transformed[2*m][2*n+1] = (matrix.array[m][n] + 
-                                        matrix.array[m][n+matrix.shape[1]/2] -
-                                        matrix.array[m+matrix.shape[0]/2][n] +
-                                        matrix.array[m+matrix.shape[0]/2][n+matrix.shape[1]/2]) / 4
+                                        matrix.array[m][n+d] -
+                                        matrix.array[m+c][n] +
+                                        matrix.array[m+c][n+d]) / 2
             transformed[2*m+1][2*n] = (matrix.array[m][n] - 
-                                        matrix.array[m][n+matrix.shape[1]/2] +
-                                        matrix.array[m+matrix.shape[0]/2][n] +
-                                        matrix.array[m+matrix.shape[0]/2][n+matrix.shape[1]/2]) / 4
+                                        matrix.array[m][n+d] +
+                                        matrix.array[m+c][n] +
+                                        matrix.array[m+c][n+d]) / 2
             transformed[2*m+1][2*n+1] = (matrix.array[m][n] + 
-                                        matrix.array[m][n+matrix.shape[1]/2] +
-                                        matrix.array[m+matrix.shape[0]/2][n] -
-                                        matrix.array[m+matrix.shape[0]/2][n+matrix.shape[1]/2]) / 4
+                                        matrix.array[m][n+d] +
+                                        matrix.array[m+c][n] -
+                                        matrix.array[m+c][n+d]) / 2
 
     return Matrix(transformed)
