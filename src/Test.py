@@ -30,8 +30,8 @@ PATH = '../res/python.jpg'
 class TestMatrix(unittest.TestCase):
     # test addition, subtraction and multiplication
     def test_arithmetics(self):
-        i = np.eye(2)
-        m = Matrix(np.eye(2))
+        i = np.eye(7)
+        m = Matrix(i)
 
         self.assertTrue(np.allclose((m+m).array, 2*i))
         self.assertTrue(np.allclose((m-m).array, 0*i))
@@ -39,7 +39,7 @@ class TestMatrix(unittest.TestCase):
 
     # test Matrix.inverse()
     def test_inverse(self):
-        dim = 3
+        dim = 7
         a = Matrix(np.random.rand(dim, dim))
         i = a*a.inverse() 
         q = np.sum(i.array - np.eye(dim))
@@ -48,7 +48,7 @@ class TestMatrix(unittest.TestCase):
 
     # test Matrix.transpose()
     def test_transpose(self):
-        i = np.eye(3)
+        i = np.eye(7)
         a = Matrix(i).transpose()
 
         self.assertTrue(np.allclose(a.array, i.transpose()))
@@ -63,12 +63,12 @@ class TestImage(unittest.TestCase):
     def test_compression(self):
         # Load image
         image = Image(PATH)
-        b = image.matrix.array.copy
+        b = np.array(image.matrix.array)
 
         # Compress and Uncompress
         image.compress(4)
         image.uncompress(4)
-        c = image.matrix.array.copy
+        c = np.array(image.matrix.array)
   
         # Estimate MAE error
         err = abs(b-c)
