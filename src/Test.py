@@ -7,99 +7,88 @@
 #
 # Methods to probe the performance of the rest of
 # the package.
-# Methods:
-# - test_matrix() : tests the matrix class
-# - test_image()  : tests the image class 
-# If this module is run as a script both of these
-# methods will be callled.
+# Classes:
+# - TestMatrix          : Matrix class
+# - TestImage           : Image class 
+# - TestTransformation  : Transformation class
+# If this module is run as a script all unittests in 
+# these classes will be run.
 #####################################################
 
 import numpy as np
+import unittest
 
 # Test matrix class
-def test_matrix(echo=False, dim=17, tol=1e-10):
-  """
-  A function to evaluate the performance of the Matrix class.
-  Parameters
-  ----------
-  echo : boolean
-      whether to write to stdout or not. Use True for debugging. Default False.
-  dim : int
-      dimension of used test matrix.
-  tol : double
-      tolerance 
-  Returns
-  -------
-  boolean
-      result of the test. True for sucessful and false otherwise
-  """
+class TestMatrix(unittest.TestCase):
+    def test_arithmetics(self):
+        I = Matrix( np.eye(2) )
+        #self.assertAlmostEqual
+    
+    def test_inverse(self):
+        dim = 3
+        a = Matrix( np.random.rand(dim,dim) )
+        i = a*a.inverse() 
+        q = np.sum(i.array - np.eye(dim))
   
-  
-  # Check inverse method
-  a = Matrix( np.random.rand(dim,dim) )
-  i = a*a.inverse()
-  b = sum( sum( abs(i.array - np.eye(dim)) ) )    
-  
-  # If echo is enabled print results
-  if echo:
-      print('='*75)
-      print("Original matrix")
-      print(a)
-      print('='*75)
-      print("Matrix times its inverse")
-      print(i)
-      print('='*75)
-      print("Absolute sum:", b)
-  
-  return b <= tol
+        self.assertAlmostEqual(q,0)
+        
+    def test_transpose(self):
+        pass
 
 # Test image class
-def test_image(path, path_compressed=None, path_uncompressed=None, echo=False, num=4):
-  """
-  A function to evaluate the performance of the Matrix class.
-  Parameters
-  ----------
-  echo : boolean
-      whether to write to stdout or not. Use True for debugging. Default False.
-  Returns
-  -------
-  boolean
-      result of the test
-  """
-  
-  # Load image
-  image = Image(path)
-  image.display()
-  b = np.array( image.matrix.array )
-  
-  # Compress
-  image.compress(num)
-  image.display()
-  if not path_compressed == None:
-    image.save(path_compressed)
-
-  # Uncompress
-  image.uncompress(num)
-  image.display()
-  if not path_uncompressed == None:
-    image.save(path_uncompressed)
-  c = np.array( image.matrix.array )
-  
-  # Estimate error
-  err = abs(b-c)
-  err = sum(err)/len(err)
+class TestImage(unittest.TestCase):
+    def setup(self):
+        import os    
     
-  if echo:
-      print("Error", err, "per pixel")
+    def test_badinput(self):
+      self.assertRaises(Exception, Image, None)
+    
+    @unittest.skipIf(not os.path.exists(path), 'Test file does not exist: '+path)
+    def test_compression(self):
+      # Load image
+      image = Image(path)
+      b = np.array( image.matrix.array )
+      
+      # Compress and Uncompress
+      image.compress(num)
+      image.uncompress(num)
+      c = np.array( image.matrix.array )
   
-  return True
+      # Estimate MAE error
+      err = abs(b-c)
+      err = sum(err)/len(err)
+      
+      # The error can be large even though the image is fine
+      self.assertLessEqual(err, 1.e+3)
+      
+    @unittest.skipIf(not os.path.exists(path), 'Test file does not exist: '+path)  
+    def test_save(self):
+      image = Image(path)
+      image.save('test')
+      
+ # Transformation class     
+class TestTransformation(unittest.TestCase):
+    def _generate_matrix():
+        return Matrix( np.random.rand(8,8) )
+    
+    def test_id(self):
+        original = TransformationTest._generate_matrix()
+        transformed = inverse_transform( transform(original) )
+        diff = (original - transformed).array
+        self.assertAlmostEqual(np.sum(abs(diff)), 0)
+    
+    def test_exid(self):
+        original = TransformationTest._generate_matrix()
+        transformed = exinverse_transform( extransform(original) )
+        diff = (original - transformed).array 
+        self.assertAlmostEqual(np.sum(abs(diff)), 0)
 
-# Test matrix
-test_matrix(echo=True)
-
-# Test image
-test_image(echo=True,
-  path                = 'C:/Users/nat13jbo/Desktop/kvinna2.jpg',
-  path_compressed     = 'C:/Users/nat13jbo/Desktop/compressed.jpg',
-  path_uncompressed   = 'C:/Users/nat13jbo/Desktop/uncompressed.jpg',
-)
+if __name__=='__main__':
+    path                = 'C:/Users/nat13jbo/Desktop/kvinna2.jpg'
+    
+    matrixTest = unittest.TestLoader().loadTestsFromTestCase(TestMatrix)
+    transformationTest = unittest.TestLoader().loadTestsFromTestCase(TestTransformation)
+    imageTest = unittest.TestLoader().loadTestsFromTestCase(TestImage)
+    suite = unittest.TestSuite( [matrixTest, transformationTest, imageTest] )
+    
+    unittest.TextTestRunner(verbosity=2).run(suite)
