@@ -36,7 +36,7 @@ class Image:
             else:
                 raise Exception('Path does not exist: ' + input)
         elif isinstance(input, np.ndarray):
-            arr = input
+            arr = np.array(input)
         else:
             raise TypeError('Expected string or array, got' + str(type(input)))
 
@@ -154,6 +154,15 @@ class Image:
         """
         self.matrix.array *= multiplier
         self.rectify()
+
+    def clone(self):
+        """
+        (Johan Book, nat13jbo@student.lu.se)
+        Returns a copy of the image.
+        """
+        image = Image(self.matrix.array)
+        image._num = self._num
+        return image
 
 
 if __name__ == '__main__':

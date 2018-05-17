@@ -5,7 +5,6 @@
 # johanbook@hotmail.com
 # 2018-05-12
 #
-# THIS CLASS DOES NOT WORK
 # Extends an image to support colour.
 #####################################################
 
@@ -18,19 +17,23 @@ from src.Image import Image
 
 
 class RGBImage:
-    def __init__(self, path):
+    def __init__(self, input):
         """
         An extension of Image.
         """
         
         # Check that path exists
-        if not isinstance(path, str):
-            raise TypeError('The path was not given as a string. Please put citation marks around the path.')
-        if not os.path.exists(path):
-            raise Exception('Path does not exist: ' + path)
+        if isinstance(input, str):
+            if os.path.exists(input):
+                arr = sm.imread(input)
+            else:
+                raise Exception('Path does not exist: ' + input)
+        elif isinstance(input, np.ndarray):
+            arr = np.array(input)
+        else:
+            raise TypeError('Exepcted string or array, got:' + str(type(input)))
         
-        # Read file and store in separate grayscale images
-        arr = sm.imread(path)
+        # Read file and store each in a separate grayscale image
         self._rows, self._cols, colors = arr.shape
         images = np.split(arr, colors, 2)
         self._images = []
@@ -50,6 +53,12 @@ class RGBImage:
         for image in self._images:
             arrays.append(image.matrix.array.reshape(self._rows, self._cols, 1))
         return np.concatenate(arrays, axis=2).astype(int)
+
+    def save(self, path):
+        """
+        Saves the image to specified path
+        """
+        sm.imsave(path, self._reform())
             
     def compress(self, num=1):
         """
@@ -97,23 +106,29 @@ class RGBImage:
         for image in self._images:
             image.intensify(multiplier)
 
+    def clone(self):
+        """
+        Returns a clone of this image.
+        """
+        return RGBImage(self._reform())
+
 
 # demonstration of rgb compression
 # runs only if RRGImage is run as a module
 if __name__ == '__main__':
 
-    # create images to study
+    # create image to study
     path = '../res/group.jpg'
     a = RGBImage(path)
-    b = RGBImage(path)
     a.display(title='Original')
 
     # compress a and show it
     a.compress()
     a.display(title='Compressed')
 
-    # compress b and increase its intensity
-    b.compress()
+    # increase the intensity of a copy of a
+    # this allows one to see details of the other subplots
+    b = a.clone()
     b.intensify(64)
     b.display(title='Compressed with increased intensity')
 
