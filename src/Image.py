@@ -139,6 +139,22 @@ class Image:
             for y in range(ylim):
                 self.matrix.array[x][y] = 255 - self.matrix.array[x][y]
 
+    def rectify(self):
+        """
+        (Johan Book, nat13jbo@student.lu.se)
+        Forces all pixels to the interval [0,255]
+        """
+        self.matrix.array[self.matrix.array < 0] = 0
+        self.matrix.array[self.matrix.array > 255] = 255
+
+    def intensify(self, multiplier):
+        """
+        (Johan Book, nat13jbo@student.lu.se)
+        Increases the intensity of the image and clips all values outside of [0,255]
+        """
+        self.matrix.array *= multiplier
+        self.rectify()
+
 
 if __name__ == '__main__':
     path = '../res/group.jpg'

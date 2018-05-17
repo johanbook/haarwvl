@@ -29,13 +29,9 @@ class RGBImage:
         if not os.path.exists(path):
             raise Exception('Path does not exist: ' + path)
         
-        # default number of compressions
-        # is used in uncompressed() if no argument is given
-        self._num = 0        
-        
         # Read file and store in separate grayscale images
         arr = sm.imread(path)
-        rows, cols, colors = arr.shape
+        self._rows, self._cols, colors = arr.shape
         images = np.split(arr, colors, 2)
         self._images = []
         for image in images:
@@ -45,10 +41,14 @@ class RGBImage:
         """
         Returns an array with the image data (int format)
         """
-        r, c = self._images[0].matrix.array.shape
+
+        # make sure all pixels are inside of correct interval
+        self.rectify()
+
+        # extract pixel data
         arrays = []
         for image in self._images:
-            arrays.append(image.matrix.array.reshape(r, c, 1))
+            arrays.append(image.matrix.array.reshape(self._rows, self._cols, 1))
         return np.concatenate(arrays, axis=2).astype(int)
             
     def compress(self, num=1):
@@ -65,11 +65,15 @@ class RGBImage:
         for image in self._images:
             image.uncompress(num)
         
-    def display(self):
+    def display(self, title=None):
         """
-        Displays the colored image.
+        Displays the colored image. OBS: this will rectify the image which might introduce
+        a (very) small data loss.
         """
+        plt.figure()
         plt.imshow(self._reform())
+        if title is not None:
+            plt.title(title)
         plt.show()
 
     def invert(self):
@@ -79,14 +83,40 @@ class RGBImage:
         for image in self._images:
             image.invert()
 
+    def rectify(self):
+        """
+        Forces all pixels to the interval [0,255]
+        """
+        for image in self._images:
+            image.rectify()
 
+    def intensify(self, multiplier):
+        """
+        Increases the intensity of the image and clips all values outside of [0,255]
+        """
+        for image in self._images:
+            image.intensify(multiplier)
+
+
+# demonstration of rgb compression
+# runs only if RRGImage is run as a module
 if __name__ == '__main__':
+
+    # create images to study
     path = '../res/group.jpg'
     a = RGBImage(path)
-    a.display()
+    b = RGBImage(path)
+    a.display(title='Original')
 
-    a.compress(1)
-    a.display()
+    # compress a and show it
+    a.compress()
+    a.display(title='Compressed')
 
-    a.uncompress(1)
-    a.display()
+    # compress b and increase its intensity
+    b.compress()
+    b.intensify(64)
+    b.display(title='Compressed with increased intensity')
+
+    # uncompress a and display it
+    a.uncompress()
+    a.display(title='Uncompressed')
