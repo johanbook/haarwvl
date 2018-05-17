@@ -20,7 +20,7 @@ def transform(matrix):
     # and performs the transformation
     if not isinstance(matrix, Matrix):
        raise TypeError ('Expects an image as a Matrix. Got:', type(matrix))
-    Wm, Wn = wavelet(matrix)
+    Wm, Wn = _wavelet(matrix)
     Wn = Wn.transpose()
     return Wm * matrix * Wn
 
@@ -37,11 +37,11 @@ def inverse_transform(matrix):
     # and performs the transformation
     if not isinstance(matrix, Matrix):
         raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
-    Wm, Wn = wavelet(matrix)
+    Wm, Wn = _wavelet(matrix)
     Wm = Wm.transpose()
     return Wm * matrix * Wn
 
-def wavelet(matrix):
+def _wavelet(matrix):
     '''
     (Frank Johansson, nat13fjo@student.lu.se)
     Constructs the Discrete Haar Wavelet Transformation matrices,
@@ -83,11 +83,14 @@ def extransform ( matrix ):
     Returns the compressed image as a Matrix
     '''
     # Check if the argument is a Matrix,
-    # construct the transformation by adding two lists
-    # and use the result to create a matrix
     if not isinstance(matrix, Matrix):
         raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
+    
+    # Create useful variables
     a, b = int(matrix.shape[0] / 2), int(matrix.shape[1] / 2)
+    
+    # Initialize transformed matrices for
+    # the four quadrants and assign elements
     topleft = np.zeros((a,b))
     topright = np.zeros((a,b))
     bottomleft = np.zeros((a,b))
@@ -102,6 +105,8 @@ def extransform ( matrix ):
                                + matrix.array[2*m+1][2*n] + matrix.array[2*m+1][2*n+1]) / 2
             bottomright[m][n] = ( -matrix.array[2*m][2*n] + matrix.array[2*m][2*n+1] 
                                + matrix.array[2*m+1][2*n] - matrix.array[2*m+1][2*n+1]) / 2
+    
+    # Combine the quadrants and return the transformed matrix
     return Matrix(np.vstack((np.hstack((topleft,topright)),np.hstack((bottomleft,bottomright)))))
     
 def exinverse_transform ( matrix ):
@@ -116,8 +121,12 @@ def exinverse_transform ( matrix ):
     # Check if the argument is a Matrix
     if not isinstance(matrix, Matrix):
         raise TypeError ('Expects an image as a Matrix. Got:', type(matrix) )
+    
+    # Create useful variables
     a, b = int(matrix.shape[0]), int(matrix.shape[1])
     c, d = int(a/2) , int(b/2)
+    
+    # Initialize transformed matrix and assign elements
     transformed = np.zeros((a, b))
     for m in range(c):
         for n in range(d):
