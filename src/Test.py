@@ -59,7 +59,7 @@ class TestImage(unittest.TestCase):
     def test_badinput(self):
         self.assertRaises(Exception, Image, None)
     
-    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: '+PATH)
+    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: ' + PATH)
     def test_compression(self):
         # Load image
         image = Image(PATH)
@@ -77,7 +77,7 @@ class TestImage(unittest.TestCase):
         # The error can be large even though the image is fine
         self.assertLessEqual(err, 1.e+3)
       
-    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: '+PATH)
+    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: ' + PATH)
     def test_save(self):
         test_path = '../test.png'
         image = Image(PATH)
@@ -107,7 +107,7 @@ class TestTransformation(unittest.TestCase):
     def test_id(self):
         self._transform(transform, inverse_transform)
     
-    def test_exid(self):
+    def test_ex_id(self):
         self._transform(extransform, exinverse_transform)
 
 
