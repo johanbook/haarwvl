@@ -60,19 +60,20 @@ class RGBImage:
         """
         sm.imsave(path, self._reform())
             
-    def compress(self, num=1):
+    def compress(self, num=1, explicit=False):
         """
         Compresses the image.
         """
         for image in self._images:
-            image.compress(num)
+            image.compress(num, explicit=explicit)
     
-    def uncompress(self, num=1):
+    def uncompress(self, num=1, explicit=False):
         """
         Uncompresses the image.
         """
         for image in self._images:
-            image.uncompress(num)
+            image.uncompress(num, explicit=explicit)
+        
         
     def display(self, title=None):
         """
