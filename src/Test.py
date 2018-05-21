@@ -151,6 +151,18 @@ class TestTransformation(unittest.TestCase):
     def test_ex_id(self):
         self._transform(extransform, exinverse_transform)
 
+        
+def presentation_test(path, explicit=False, rgb=False, num=1):
+    """
+    Tests used in the presentation.
+    """
+    
+    image = RGBImage(path) if rgb else Image(path)
+    image.display()
+    image.compress(num, explicit=explicit)
+    image.display()
+    image.uncompress(num, explicit=explicit)
+    image.display() 
 
 # load all tests if this module is explicitly run
 if __name__ == '__main__':
