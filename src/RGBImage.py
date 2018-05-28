@@ -5,7 +5,6 @@
 # johanbook@hotmail.com
 # 2018-05-12
 #
-# THIS CLASS DOES NOT WORK
 # Extends an image to support colour.
 #####################################################
 
@@ -18,65 +17,122 @@ from src.Image import Image
 
 
 class RGBImage:
-    def __init__(self, path):
+    def __init__(self, input):
         """
         An extension of Image.
         """
         
         # Check that path exists
-        if not isinstance(path,str):
-            raise TypeError('The path was not given as a string. Please put citation marks around the path.')
-        if not os.path.exists(path):
-            raise Exception('Path does not exist: ' + path)
-
-        print('WARNING: Compression does not work correctly for this class (RGBImage)')
+        if isinstance(input, str):
+            if os.path.exists(input):
+                arr = sm.imread(input)
+            else:
+                raise Exception('Path does not exist: ' + input)
+        elif isinstance(input, np.ndarray):
+            arr = np.array(input)
+        else:
+            raise TypeError('Exepcted string or array, got:' + str(type(input)))
         
-        # default number of compressions
-        # is used in uncompressed() if no argument is given
-        self._num = 0        
-        
-        # Read file and store in separate grayscale images
-        arr = sm.imread(path)
-        rows, cols, colors = arr.shape
+        # Read file and store each in a separate grayscale image
+        self._rows, self._cols, colors = arr.shape
         images = np.split(arr, colors, 2)
         self._images = []
         for image in images:
-            Image(np.squeeze(image, axis=2)).display()
-            self._images.append(Image(np.squeeze(image, axis=2)))
+            self._images.append(Image(np.squeeze(image, axis=2).astype(float)))
         
     def _reform(self):
         """
-        Returns an array with the image data.
+        Returns an array with the image data (int format)
         """
-        r, c = self._images[0].matrix.array.shape
+
+        # make sure all pixels are inside of correct interval
+        self.rectify()
+
+        # extract pixel data
         arrays = []
         for image in self._images:
-            arrays.append(image.matrix.array.reshape(r, c, 1))
-        return np.concatenate(arrays, axis=2)
+            arrays.append(image.matrix.array.reshape(self._rows, self._cols, 1))
+        return np.concatenate(arrays, axis=2).astype(int)
+
+    def save(self, path):
+        """
+        Saves the image to specified path
+        """
+        sm.imsave(path, self._reform())
             
-    def compress(self, num=1):
+    def compress(self, num=1, explicit=False):
         """
         Compresses the image.
         """
         for image in self._images:
-            image.compress(num)
+            image.compress(num, explicit=explicit)
     
-    def uncompress(self, num=1):
+    def uncompress(self, num=1, explicit=False):
         """
         Uncompresses the image.
         """
         for image in self._images:
-            image.uncompress(num)
+            image.uncompress(num, explicit=explicit)
         
-    def display(self):
+        
+    def display(self, title=None):
         """
-        Displays the colored image.
+        Displays the colored image. OBS: this will rectify the image which might introduce
+        a (very) small data loss.
         """
+        plt.figure()
         plt.imshow(self._reform())
-        
+        if title is not None:
+            plt.title(title)
+        plt.show()
+
     def invert(self):
         """
         Inverts each color of the image, ie. (r,g,b) -> (255-r, 255-g, 255-b).
         """
         for image in self._images:
             image.invert()
+
+    def rectify(self):
+        """
+        Forces all pixels to the interval [0,255]
+        """
+        for image in self._images:
+            image.rectify()
+
+    def intensify(self, multiplier):
+        """
+        Increases the intensity of the image and clips all values outside of [0,255]
+        """
+        for image in self._images:
+            image.intensify(multiplier)
+
+    def clone(self):
+        """
+        Returns a clone of this image.
+        """
+        return RGBImage(self._reform())
+
+
+# demonstration of rgb compression
+# runs only if RRGImage is run as a module
+if __name__ == '__main__':
+
+    # create image to study
+    path = '../res/group.jpg'
+    a = RGBImage(path)
+    a.display(title='Original')
+
+    # compress a and show it
+    a.compress()
+    a.display(title='Compressed')
+
+    # increase the intensity of a copy of a
+    # this allows one to see details of the other subplots
+    b = a.clone()
+    b.intensify(64)
+    b.display(title='Compressed with increased intensity')
+
+    # uncompress a and display it
+    a.uncompress()
+    a.display(title='Uncompressed')

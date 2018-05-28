@@ -21,6 +21,7 @@ import os
 
 from src.Matrix import Matrix
 from src.Image import Image
+from src.RGBImage import RGBImage
 from src.Transform import *
 
 PATH = '../res/python.jpg'
@@ -58,8 +59,8 @@ class TestMatrix(unittest.TestCase):
 class TestImage(unittest.TestCase):
     def test_badinput(self):
         self.assertRaises(Exception, Image, None)
-    
-    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: '+PATH)
+
+    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: ' + PATH)
     def test_compression(self):
         # Load image
         image = Image(PATH)
@@ -69,18 +70,58 @@ class TestImage(unittest.TestCase):
         image.compress(4)
         image.uncompress(4)
         c = np.array(image.matrix.array)
-  
+
         # Estimate MAE error
         err = abs(b-c)
         err = sum(err)/len(err)
 
         # The error can be large even though the image is fine
         self.assertLessEqual(err, 1.e+3)
-      
-    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: '+PATH)
+
+    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: ' + PATH)
     def test_save(self):
         test_path = '../test.png'
         image = Image(PATH)
+        try:
+            image.save(test_path)
+        except Exception:
+            self.assertTrue(False)
+
+        if os.path.exists(test_path):
+            os.remove(test_path)
+        else:
+            self.assertTrue(False)
+
+
+# Test RGB image class
+# is more or less a copy of TestImage but different enough
+# to be its own class
+class TestRGBImage(unittest.TestCase):
+    def test_badinput(self):
+        self.assertRaises(Exception, RGBImage, None)
+
+    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: ' + PATH)
+    def test_compression(self):
+        # Load image
+        image = RGBImage(PATH)
+        b = image._reform()
+
+        # Compress and Uncompress
+        image.compress(4)
+        image.uncompress(4)
+        c = image._reform()
+
+        # Estimate MAE error
+        err = abs(b - c)
+        err = sum(err) / len(err)
+
+        # The error can be large even though the image is fine
+        self.assertLessEqual(err, 1.e+4)
+
+    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: ' + PATH)
+    def test_save(self):
+        test_path = '../test.png'
+        image = RGBImage(PATH)
         try:
             image.save(test_path)
         except Exception:
@@ -107,9 +148,21 @@ class TestTransformation(unittest.TestCase):
     def test_id(self):
         self._transform(transform, inverse_transform)
     
-    def test_exid(self):
+    def test_ex_id(self):
         self._transform(extransform, exinverse_transform)
 
+        
+def presentation_test(path, explicit=False, rgb=False, num=1):
+    """
+    Tests used in the presentation.
+    """
+    
+    image = RGBImage(path) if rgb else Image(path)
+    image.display()
+    image.compress(num, explicit=explicit)
+    image.display()
+    image.uncompress(num, explicit=explicit)
+    image.display() 
 
 # load all tests if this module is explicitly run
 if __name__ == '__main__':
@@ -117,6 +170,7 @@ if __name__ == '__main__':
         unittest.TestLoader().loadTestsFromTestCase(TestMatrix),
         unittest.TestLoader().loadTestsFromTestCase(TestTransformation),
         unittest.TestLoader().loadTestsFromTestCase(TestImage),
+        unittest.TestLoader().loadTestsFromTestCase(TestRGBImage),
     ])
     
     unittest.TextTestRunner(verbosity=2).run(suite)

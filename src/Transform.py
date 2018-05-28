@@ -134,8 +134,8 @@ def exinverse_transform ( matrix ):
     for m in range(c):
         for n in range(d):
             transformed[2*m][2*n] = (matrix.array[m][n] - 
-                                    matrix.array[m][n+c] -
-                                    matrix.array[m+d][n] -
+                                    matrix.array[m][n+d] -
+                                    matrix.array[m+c][n] -
                                     matrix.array[m+c][n+d]) / 2
             transformed[2*m][2*n+1] = (matrix.array[m][n] + 
                                         matrix.array[m][n+d] -

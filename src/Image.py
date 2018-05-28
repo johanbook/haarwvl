@@ -18,7 +18,7 @@ from src.Transform import *
 
 
 class Image:
-    def __init__(self, path):
+    def __init__(self, input):
         """
         (Björn Annby-Andersson, bas12ban@student.lu.se
          Johan Book, nat13jbo@student.lu.se)
@@ -27,22 +27,25 @@ class Image:
         Input: path (string) provided by user, given in one of the two following forms, 
         ex1: 'C:\\users\\documents' or ex2: 'C:/users/documents'.
         """
-        
+
         # The if statements check whether the path is given as a string or if the path exists. Raises errors when
         # the path is not given as a string or if the path does not exist. 
-        if not isinstance(path, str):
-            raise TypeError('The path was not given as a string. Please put citation marks around the path.')
-        if not os.path.exists(path):
-            raise Exception('Path does not exist: ' + path)
-        
+        if isinstance(input, str):
+            if os.path.exists(input):
+                arr = sm.imread(input, True)
+            else:
+                raise Exception('Path does not exist: ' + input)
+        elif isinstance(input, np.ndarray):
+            arr = np.array(input)
+        else:
+            raise TypeError('Expected string or array, got' + str(type(input)))
+
         # default number of compressions
         # is used in uncompressed() if no argument is given
         self._num = 0        
-        
-        # Creates an array "arr" which contains an image with grayscale coefficients. 
+
         # If the number of rows or columns of "arr" is odd, "arr" is reshaped to be an
-        # array of even number of columns and rows. 
-        arr = sm.imread(path, True)
+        # array of even number of columns and rows.
         rows, cols = arr.shape
         if rows % 2 != 0:
             arr = arr[0:-1]
@@ -135,3 +138,39 @@ class Image:
         for x in range(xlim):
             for y in range(ylim):
                 self.matrix.array[x][y] = 255 - self.matrix.array[x][y]
+
+    def rectify(self):
+        """
+        (Johan Book, nat13jbo@student.lu.se)
+        Forces all pixels to the interval [0,255]
+        """
+        self.matrix.array[self.matrix.array < 0] = 0
+        self.matrix.array[self.matrix.array > 255] = 255
+
+    def intensify(self, multiplier):
+        """
+        (Johan Book, nat13jbo@student.lu.se)
+        Increases the intensity of the image and clips all values outside of [0,255]
+        """
+        self.matrix.array *= multiplier
+        self.rectify()
+
+    def clone(self):
+        """
+        (Johan Book, nat13jbo@student.lu.se)
+        Returns a copy of the image.
+        """
+        image = Image(self.matrix.array)
+        image._num = self._num
+        return image
+
+
+if __name__ == '__main__':
+    path = '../res/group.jpg'
+    a = Image(path)
+    a.display()
+
+    a.compress()
+    a.uncompress()
+
+    a.display()
