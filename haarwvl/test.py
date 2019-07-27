@@ -1,30 +1,22 @@
 # -*- coding: utf-8 -*-
-#####################################################
-# Test.py
-# Johan Book
-# johanbook@hotmail.com
-# 2018-05-07
-#
-# Methods to probe the performance of the rest of
-# the package.
-# Classes:
-# - TestMatrix          : Matrix class
-# - TestImage           : Image class 
-# - TestTransformation  : Transformation class
-# If this module is run as a script all unittests in 
-# these classes will be run.
-#####################################################
+"""
+Johan Book
+johanbook@hotmail.com
+2018-05-07
+
+Methods to test the rest of the package.
+"""
 
 import numpy as np
 import unittest
 import os
 
-from src.Matrix import Matrix
-from src.Image import Image
-from src.RGBImage import RGBImage
-from src.Transform import *
+from .matrix import Matrix
+from .image import Image
+from .rgb_image import RGBImage
+from .transform import *
 
-PATH = '../res/python.jpg'
+PATH = "../res/python.jpg"
 
 
 # Test matrix class
@@ -34,17 +26,17 @@ class TestMatrix(unittest.TestCase):
         i = np.eye(7)
         m = Matrix(i)
 
-        self.assertTrue(np.allclose((m+m).array, 2*i))
-        self.assertTrue(np.allclose((m-m).array, 0*i))
-        self.assertTrue(np.allclose((m*m).array, i))
+        self.assertTrue(np.allclose((m + m).array, 2 * i))
+        self.assertTrue(np.allclose((m - m).array, 0 * i))
+        self.assertTrue(np.allclose((m * m).array, i))
 
     # test Matrix.inverse()
     def test_inverse(self):
         dim = 7
         a = Matrix(np.random.rand(dim, dim))
-        i = a*a.inverse() 
+        i = a * a.inverse()
         q = np.sum(i.array - np.eye(dim))
-  
+
         self.assertAlmostEqual(q, 0)
 
     # test Matrix.transpose()
@@ -60,7 +52,7 @@ class TestImage(unittest.TestCase):
     def test_badinput(self):
         self.assertRaises(Exception, Image, None)
 
-    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: ' + PATH)
+    @unittest.skipIf(not os.path.exists(PATH), "Test file does not exist: " + PATH)
     def test_compression(self):
         # Load image
         image = Image(PATH)
@@ -72,15 +64,15 @@ class TestImage(unittest.TestCase):
         c = np.array(image.matrix.array)
 
         # Estimate MAE error
-        err = abs(b-c)
-        err = sum(err)/len(err)
+        err = abs(b - c)
+        err = sum(err) / len(err)
 
         # The error can be large even though the image is fine
-        self.assertLessEqual(err, 1.e+3)
+        self.assertLessEqual(err, 1.0e3)
 
-    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: ' + PATH)
+    @unittest.skipIf(not os.path.exists(PATH), "Test file does not exist: " + PATH)
     def test_save(self):
-        test_path = '../test.png'
+        test_path = "../test.png"
         image = Image(PATH)
         try:
             image.save(test_path)
@@ -100,7 +92,7 @@ class TestRGBImage(unittest.TestCase):
     def test_badinput(self):
         self.assertRaises(Exception, RGBImage, None)
 
-    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: ' + PATH)
+    @unittest.skipIf(not os.path.exists(PATH), "Test file does not exist: " + PATH)
     def test_compression(self):
         # Load image
         image = RGBImage(PATH)
@@ -116,11 +108,11 @@ class TestRGBImage(unittest.TestCase):
         err = sum(err) / len(err)
 
         # The error can be large even though the image is fine
-        self.assertLessEqual(err, 1.e+4)
+        self.assertLessEqual(err, 1.0e4)
 
-    @unittest.skipIf(not os.path.exists(PATH), 'Test file does not exist: ' + PATH)
+    @unittest.skipIf(not os.path.exists(PATH), "Test file does not exist: " + PATH)
     def test_save(self):
-        test_path = '../test.png'
+        test_path = "../test.png"
         image = RGBImage(PATH)
         try:
             image.save(test_path)
@@ -147,30 +139,33 @@ class TestTransformation(unittest.TestCase):
 
     def test_id(self):
         self._transform(transform, inverse_transform)
-    
+
     def test_ex_id(self):
         self._transform(extransform, exinverse_transform)
 
-        
+
 def presentation_test(path, explicit=False, rgb=False, num=1):
     """
     Tests used in the presentation.
     """
-    
+
     image = RGBImage(path) if rgb else Image(path)
     image.display()
     image.compress(num, explicit=explicit)
     image.display()
     image.uncompress(num, explicit=explicit)
-    image.display() 
+    image.display()
+
 
 # load all tests if this module is explicitly run
-if __name__ == '__main__':
-    suite = unittest.TestSuite([
-        unittest.TestLoader().loadTestsFromTestCase(TestMatrix),
-        unittest.TestLoader().loadTestsFromTestCase(TestTransformation),
-        unittest.TestLoader().loadTestsFromTestCase(TestImage),
-        unittest.TestLoader().loadTestsFromTestCase(TestRGBImage),
-    ])
-    
+if __name__ == "__main__":
+    suite = unittest.TestSuite(
+        [
+            unittest.TestLoader().loadTestsFromTestCase(TestMatrix),
+            unittest.TestLoader().loadTestsFromTestCase(TestTransformation),
+            unittest.TestLoader().loadTestsFromTestCase(TestImage),
+            unittest.TestLoader().loadTestsFromTestCase(TestRGBImage),
+        ]
+    )
+
     unittest.TextTestRunner(verbosity=2).run(suite)

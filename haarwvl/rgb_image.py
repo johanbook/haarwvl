@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #####################################################
-# RGBImage.py
+# rgb_image.py
 # Johan Book
 # johanbook@hotmail.com
 # 2018-05-12
@@ -21,25 +21,25 @@ class RGBImage:
         """
         An extension of Image.
         """
-        
+
         # Check that path exists
         if isinstance(input, str):
             if os.path.exists(input):
                 arr = sm.imread(input)
             else:
-                raise Exception('Path does not exist: ' + input)
+                raise Exception("Path does not exist: " + input)
         elif isinstance(input, np.ndarray):
             arr = np.array(input)
         else:
-            raise TypeError('Exepcted string or array, got:' + str(type(input)))
-        
+            raise TypeError("Exepcted string or array, got:" + str(type(input)))
+
         # Read file and store each in a separate grayscale image
         self._rows, self._cols, colors = arr.shape
         images = np.split(arr, colors, 2)
         self._images = []
         for image in images:
             self._images.append(Image(np.squeeze(image, axis=2).astype(float)))
-        
+
     def _reform(self):
         """
         Returns an array with the image data (int format)
@@ -59,22 +59,21 @@ class RGBImage:
         Saves the image to specified path
         """
         sm.imsave(path, self._reform())
-            
+
     def compress(self, num=1, explicit=False):
         """
         Compresses the image.
         """
         for image in self._images:
             image.compress(num, explicit=explicit)
-    
+
     def uncompress(self, num=1, explicit=False):
         """
         Uncompresses the image.
         """
         for image in self._images:
             image.uncompress(num, explicit=explicit)
-        
-        
+
     def display(self, title=None):
         """
         Displays the colored image. OBS: this will rectify the image which might introduce
@@ -116,23 +115,23 @@ class RGBImage:
 
 # demonstration of rgb compression
 # runs only if RRGImage is run as a module
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # create image to study
-    path = '../res/group.jpg'
+    path = "../res/group.jpg"
     a = RGBImage(path)
-    a.display(title='Original')
+    a.display(title="Original")
 
     # compress a and show it
     a.compress()
-    a.display(title='Compressed')
+    a.display(title="Compressed")
 
     # increase the intensity of a copy of a
     # this allows one to see details of the other subplots
     b = a.clone()
     b.intensify(64)
-    b.display(title='Compressed with increased intensity')
+    b.display(title="Compressed with increased intensity")
 
     # uncompress a and display it
     a.uncompress()
-    a.display(title='Uncompressed')
+    a.display(title="Uncompressed")
