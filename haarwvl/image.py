@@ -7,33 +7,30 @@ bas12ban@student.lu.se
 Class called Image.
 """
 
-import scipy.misc as sm
-from scipy.misc import toimage
+from PIL import Image as PILImage
+import os
 
-from .matrix import Matrix
+
 from .transform import *
 
 
 class Image:
-    def __init__(self, input):
-        """
-        Class representing an grayscale image. Imported images can be compressed 
-        using the Haar Wavelet transformation, compressed images can be uncompressed.
-        Input: path (string) provided by user, given in one of the two following forms, 
-        ex1: 'C:\\users\\documents' or ex2: 'C:/users/documents'.
-        """
+    """
+    Image that can be compressed and uncompressed using the Haar Wavelet
+    transformation.
 
-        # The if statements check whether the path is given as a string or if the path exists. Raises errors when
-        # the path is not given as a string or if the path does not exist.
-        if isinstance(input, str):
-            if os.path.exists(input):
-                arr = sm.imread(input, True)
+    Args:
+        image (str or np.array): The image.
+    """
+
+    def __init__(self, array):
+        if isinstance(array, str):
+            if os.path.exists(array):
+                array = np.array(PILImage.open(array))
             else:
-                raise Exception("Path does not exist: " + input)
-        elif isinstance(input, np.ndarray):
-            arr = np.array(input)
-        else:
-            raise TypeError("Expected string or array, got" + str(type(input)))
+                raise Exception(f"Path does not exist: {array}")
+        if not isinstance(array, np.ndarray):
+            raise TypeError(f"Expected string or array, got {type(array)}")
 
         # default number of compressions
         # is used in uncompressed() if no argument is given
@@ -41,124 +38,111 @@ class Image:
 
         # If the number of rows or columns of "arr" is odd, "arr" is reshaped to be an
         # array of even number of columns and rows.
-        rows, cols = arr.shape
+        rows, cols = array.shape
         if rows % 2 != 0:
-            arr = arr[0:-1]
+            array = array[0:-1]
         if cols % 2 != 0:
-            arr = arr[:, 0:-1]
-        self.matrix = Matrix(arr)
+            array = array[:, 0:-1]
+        self.array = array
 
     def save(self, path):
         """
-        This method takes a path as input and stores the matrix 
-        representation of an image as a grayscale picture at the given path.
-        Input: path (string), provided by user.
-        """
-        sm.imsave(path, self.matrix.array)
+        Save image to disc.
 
-    def compress(self, num=1, echo=False, explicit=False):
+        Args:
+            path (str): Where to save image.
         """
-         Compresses an image with the Haar wavelet transformation.
-         Inputs: num (int), number of compressions, given by user (default value is 1)
-                 echo (Boolean), should not be specified by user (default False)
+        image = PILImage.fromarray(self.array)
+        if image.mode != "RGB":
+            image = image.convert("RGB")
+        image.save(path)
+
+    def compress(self, num=1, explicit=False):
         """
+         Compress image using a Haar wavelet transformation.
+
+         Args:
+             num (int): Number of times to apply compression (default 1).
+             explicit (bool) If true, compression will use explicit
+                form of transformation (default False).
+        """
+        if num < 1:
+            raise Exception(f"Expected positive integer, got {num}")
+
         self._num = num
-        rows, cols = self.matrix.shape
+        rows, cols = self.array.shape
 
         if rows % 2 ** num != 0 or cols % 2 ** num != 0:
             print("WARNING: Significant compression artifacts might occur")
 
-        if num < 1:
-            raise Exception("Expected positive integer, got " + str(num))
-
         for n in range(num):
-            temp_matrix = Matrix(
-                self.matrix.array[0 : int(rows / 2 ** n), 0 : int(cols / 2 ** n)]
-            )
-
-            if echo:
-                toimage(temp_matrix.array).show()
+            temp_matrix = self.array[0 : int(rows / 2 ** n), 0 : int(cols / 2 ** n)]
 
             temp_matrix = (
                 extransform(temp_matrix) if explicit else transform(temp_matrix)
             )
 
-            if echo:
-                print(temp_matrix.shape)
+            self.array[0 : int(rows / 2 ** n), 0 : int(cols / 2 ** n)] = temp_matrix / 2
 
-            self.matrix.array[0 : int(rows / 2 ** n), 0 : int(cols / 2 ** n)] = (
-                temp_matrix.array / 2
-            )
+        return self
 
-            if echo:
-                print("Matrix max value:", np.amax(self.matrix.array))
-
-    def uncompress(self, num=-1, echo=False, explicit=False):
+    def uncompress(self, num=-1, explicit=False):
         """
-         Decompresses a compressed image. User must know how many times the input image is compressed
-         to get back original.
-         Inputs: num (int), number of times to decompress, provided by user 
-                 echo (Boolean), should not be used by user (default False)
+         Uncompress image using a Haar wavelet transformation.
+
+         Args:
+             num (int): Number of times to apply uncompression (default 1).
+             explicit (bool) If true, compression will use explicit
+                form of transformation (default False).
         """
         if num < 0:
             num = self._num
 
         for n in range(num - 1, -1, -1):
-            rows, cols = self.matrix.shape
+            rows, cols = self.array.shape
 
-            temp_matrix = Matrix(
-                self.matrix.array[0 : int(rows / 2 ** n), 0 : int(cols / 2 ** n)]
-            )
-
-            if echo:
-                toimage(temp_matrix.array).show()
+            temp_matrix = self.array[0 : int(rows / 2 ** n), 0 : int(cols / 2 ** n)]
 
             temp_matrix = (
                 exinverse_transform(temp_matrix)
                 if explicit
                 else inverse_transform(temp_matrix)
             )
-            temp_matrix.array = 255 * temp_matrix.array / np.amax(temp_matrix.array)
-            self.matrix.array[
-                0 : int(rows / 2 ** n), 0 : int(cols / 2 ** n)
-            ] = temp_matrix.array
+            temp_matrix = 255 * temp_matrix / np.amax(temp_matrix)
+            self.array[0 : int(rows / 2 ** n), 0 : int(cols / 2 ** n)] = temp_matrix
 
-            if echo:
-                print("Matrix max value:", np.amax(self.matrix.array))
+        return self
 
-    def display(self):
+    def show(self):
         """
-        This method displays the current version of the image, it can be compressed, decompressed or neither. 
+        Display the image.
         """
-        toimage(self.matrix.array).show()
+        PILImage(self.array).show()
 
     def invert(self):
         """
-        Inverts the gray-scale coefficients of the image.
+        Inverts the pixel coefficients of the image.
         """
-        xlim, ylim = self.matrix.shape
-        for x in range(xlim):
-            for y in range(ylim):
-                self.matrix.array[x][y] = 255 - self.matrix.array[x][y]
+        self.array = 255 - self.array
 
     def rectify(self):
         """
-        Forces all pixels to the interval [0,255]
+        Forces all pixels to the interval [0, 255]
         """
-        self.matrix.array[self.matrix.array < 0] = 0
-        self.matrix.array[self.matrix.array > 255] = 255
+        self.array[self.array < 0] = 0
+        self.array[self.array > 255] = 255
 
     def intensify(self, multiplier):
         """
         Increases the intensity of the image and clips all values outside of [0,255]
         """
-        self.matrix.array *= multiplier
+        self.array *= multiplier
         self.rectify()
 
     def clone(self):
         """
         Returns a copy of the image.
         """
-        image = Image(self.matrix.array)
+        image = Image(self.array)
         image._num = self._num
         return image

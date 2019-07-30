@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-#####################################################
-# rgb_image.py
-# Johan Book
-# johanbook@hotmail.com
-# 2018-05-12
-#
-# Extends an image to support colour.
-#####################################################
+"""
+Johan Book
+johanbook@hotmail.com
+2018-05-12
 
+Extends an image to support colour.
+"""
+
+from PIL import Image
 import os
 import numpy as np
-import scipy.misc as sm
-import matplotlib.pyplot as plt
 
-from src.Image import Image
+# import matplotlib.pyplot as plt
+
+from .image import Image
 
 
 class RGBImage:
@@ -111,27 +111,3 @@ class RGBImage:
         Returns a clone of this image.
         """
         return RGBImage(self._reform())
-
-
-# demonstration of rgb compression
-# runs only if RRGImage is run as a module
-if __name__ == "__main__":
-
-    # create image to study
-    path = "../res/group.jpg"
-    a = RGBImage(path)
-    a.display(title="Original")
-
-    # compress a and show it
-    a.compress()
-    a.display(title="Compressed")
-
-    # increase the intensity of a copy of a
-    # this allows one to see details of the other subplots
-    b = a.clone()
-    b.intensify(64)
-    b.display(title="Compressed with increased intensity")
-
-    # uncompress a and display it
-    a.uncompress()
-    a.display(title="Uncompressed")

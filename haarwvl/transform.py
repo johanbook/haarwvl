@@ -4,8 +4,8 @@ Created on Mon May  7 13:34:28 2018
 @author: Frank Johansson
 """
 
-from scipy import *
-from .matrix import Matrix
+from math import sqrt
+import numpy as np
 
 
 def transform(matrix):
@@ -15,12 +15,8 @@ def transform(matrix):
     using the Haar Wavelet Transformation method.
     Returns the compressed image as a Matrix
     """
-
-    # Check if the argument is a Matrix,
-    # creates the transformation matrices
-    # and performs the transformation
-    if not isinstance(matrix, Matrix):
-        raise TypeError("Expects an image as a Matrix. Got:", type(matrix))
+    if not isinstance(matrix, np.ndarray):
+        raise TypeError(f"Expected numpy array but got {type(matrix)}")
     Wm, Wn = _wavelet(matrix)
     Wn = Wn.transpose()
     return Wm * matrix * Wn
@@ -32,12 +28,8 @@ def inverse_transform(matrix):
     using the Haar Wavelet Transformation method.
     Returns the uncompressed image as a Matrix
     """
-
-    # Check if the argument is a Matrix,
-    # creates the transformation matrices
-    # and performs the transformation
-    if not isinstance(matrix, Matrix):
-        raise TypeError("Expects an image as a Matrix. Got:", type(matrix))
+    if not isinstance(matrix, np.ndarray):
+        raise TypeError(f"Expected numpy array but got {type(matrix)}")
     Wm, Wn = _wavelet(matrix)
     Wm = Wm.transpose()
     return Wm * matrix * Wn
@@ -50,27 +42,27 @@ def _wavelet(matrix):
     """
 
     # Initialize transformation matrices
-    Wm = Matrix(np.zeros((matrix.shape[0], matrix.shape[0])))
-    Wn = Matrix(np.zeros((matrix.shape[1], matrix.shape[1])))
+    Wm = np.zeros((matrix.shape[0], matrix.shape[0]))
+    Wn = np.zeros((matrix.shape[1], matrix.shape[1]))
 
     # Create indices for element assignment
-    i, j = Wm.indices()
-    k, l = Wn.indices()
+    i, j = np.indices(Wm.shape)
+    k, l = np.indices(Wn.shape)
 
     # The factor to set the transformation matrix element to
     factor = sqrt(2) / 2.0
 
     # Finalize the LHS transformation matrix
-    Wm.array[2 * i == j] = factor
-    Wm.array[2 * i == j - 1] = factor
-    Wm.array[2 * i - Wm.shape[0] == j] = -factor
-    Wm.array[2 * i - Wm.shape[0] == j - 1] = factor
+    Wm[2 * i == j] = factor
+    Wm[2 * i == j - 1] = factor
+    Wm[2 * i - Wm.shape[0] == j] = -factor
+    Wm[2 * i - Wm.shape[0] == j - 1] = factor
 
     # Finalize the RHS transformation matrix
-    Wn.array[2 * k == l] = factor
-    Wn.array[2 * k == l - 1] = factor
-    Wn.array[2 * k - Wn.shape[0] == l] = -factor
-    Wn.array[2 * k - Wn.shape[0] == l - 1] = factor
+    Wn[2 * k == l] = factor
+    Wn[2 * k == l - 1] = factor
+    Wn[2 * k - Wn.shape[0] == l] = -factor
+    Wn[2 * k - Wn.shape[0] == l - 1] = factor
 
     # Return the LHS and the RHS transformation matrices
     return Wm, Wn
@@ -83,9 +75,8 @@ def extransform(matrix):
     The calculations are made explicitly without the use of matrices.
     Returns the compressed image as a Matrix
     """
-    # Check if the argument is a Matrix,
-    if not isinstance(matrix, Matrix):
-        raise TypeError("Expects an image as a Matrix. Got:", type(matrix))
+    if not isinstance(matrix, np.ndarray):
+        raise TypeError(f"Expected numpy array but got {type(matrix)}")
 
     # Create useful variables
     a, b = int(matrix.shape[0] / 2), int(matrix.shape[1] / 2)
@@ -99,35 +90,33 @@ def extransform(matrix):
     for m in range(int(matrix.shape[0] / 2)):
         for n in range(int(matrix.shape[1] / 2)):
             topleft[m][n] = (
-                matrix.array[2 * m][2 * n]
-                + matrix.array[2 * m][2 * n + 1]
-                + matrix.array[2 * m + 1][2 * n]
-                + matrix.array[2 * m + 1][2 * n + 1]
+                matrix[2 * m][2 * n]
+                + matrix[2 * m][2 * n + 1]
+                + matrix[2 * m + 1][2 * n]
+                + matrix[2 * m + 1][2 * n + 1]
             ) / 2
             topright[m][n] = (
-                -matrix.array[2 * m][2 * n]
-                + matrix.array[2 * m][2 * n + 1]
-                - matrix.array[2 * m + 1][2 * n]
-                + matrix.array[2 * m + 1][2 * n + 1]
+                -matrix[2 * m][2 * n]
+                + matrix[2 * m][2 * n + 1]
+                - matrix[2 * m + 1][2 * n]
+                + matrix[2 * m + 1][2 * n + 1]
             ) / 2
             bottomleft[m][n] = (
-                -matrix.array[2 * m][2 * n]
-                - matrix.array[2 * m][2 * n + 1]
-                + matrix.array[2 * m + 1][2 * n]
-                + matrix.array[2 * m + 1][2 * n + 1]
+                -matrix[2 * m][2 * n]
+                - matrix[2 * m][2 * n + 1]
+                + matrix[2 * m + 1][2 * n]
+                + matrix[2 * m + 1][2 * n + 1]
             ) / 2
             bottomright[m][n] = (
-                -matrix.array[2 * m][2 * n]
-                + matrix.array[2 * m][2 * n + 1]
-                + matrix.array[2 * m + 1][2 * n]
-                - matrix.array[2 * m + 1][2 * n + 1]
+                -matrix[2 * m][2 * n]
+                + matrix[2 * m][2 * n + 1]
+                + matrix[2 * m + 1][2 * n]
+                - matrix[2 * m + 1][2 * n + 1]
             ) / 2
 
     # Combine the quadrants and return the transformed matrix
-    return Matrix(
-        np.vstack(
-            (np.hstack((topleft, topright)), np.hstack((bottomleft, bottomright)))
-        )
+    return np.vstack(
+        (np.hstack((topleft, topright)), np.hstack((bottomleft, bottomright)))
     )
 
 
@@ -138,10 +127,8 @@ def exinverse_transform(matrix):
     The calculations are made explicitly without the use of matrices.
     Returns the uncompressed image as a Matrix
     """
-
-    # Check if the argument is a Matrix
-    if not isinstance(matrix, Matrix):
-        raise TypeError("Expects an image as a Matrix. Got:", type(matrix))
+    if not isinstance(matrix, np.ndarray):
+        raise TypeError(f"Expected numpy array but got {type(matrix)}")
 
     # Create useful variables
     a, b = int(matrix.shape[0]), int(matrix.shape[1])
@@ -152,28 +139,28 @@ def exinverse_transform(matrix):
     for m in range(c):
         for n in range(d):
             transformed[2 * m][2 * n] = (
-                matrix.array[m][n]
-                - matrix.array[m][n + d]
-                - matrix.array[m + c][n]
-                - matrix.array[m + c][n + d]
+                matrix[m][n]
+                - matrix[m][n + d]
+                - matrix[m + c][n]
+                - matrix[m + c][n + d]
             ) / 2
             transformed[2 * m][2 * n + 1] = (
-                matrix.array[m][n]
-                + matrix.array[m][n + d]
-                - matrix.array[m + c][n]
-                + matrix.array[m + c][n + d]
+                matrix[m][n]
+                + matrix[m][n + d]
+                - matrix[m + c][n]
+                + matrix[m + c][n + d]
             ) / 2
             transformed[2 * m + 1][2 * n] = (
-                matrix.array[m][n]
-                - matrix.array[m][n + d]
-                + matrix.array[m + c][n]
-                + matrix.array[m + c][n + d]
+                matrix[m][n]
+                - matrix[m][n + d]
+                + matrix[m + c][n]
+                + matrix[m + c][n + d]
             ) / 2
             transformed[2 * m + 1][2 * n + 1] = (
-                matrix.array[m][n]
-                + matrix.array[m][n + d]
-                + matrix.array[m + c][n]
-                - matrix.array[m + c][n + d]
+                matrix[m][n]
+                + matrix[m][n + d]
+                + matrix[m + c][n]
+                - matrix[m + c][n + d]
             ) / 2
 
-    return Matrix(transformed)
+    return transformed
